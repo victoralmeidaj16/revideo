@@ -1,0 +1,527 @@
+{
+  "audioUrl": "6696756c-03cc-419e-90b5-82926a4e3ef9-audio.wav",
+  "images": [
+    "/6696756c-03cc-419e-90b5-82926a4e3ef9-image-0.png",
+    "/6696756c-03cc-419e-90b5-82926a4e3ef9-image-1.png",
+    "/6696756c-03cc-419e-90b5-82926a4e3ef9-image-2.png",
+    "/6696756c-03cc-419e-90b5-82926a4e3ef9-image-3.png",
+    "/6696756c-03cc-419e-90b5-82926a4e3ef9-image-4.png"
+  ],
+  "words": [
+    {
+      "punctuated_word": "Nunca",
+      "start": 0.008,
+      "end": 0.408
+    },
+    {
+      "punctuated_word": "se",
+      "start": 0.408,
+      "end": 0.748
+    },
+    {
+      "punctuated_word": "perguntou",
+      "start": 0.748,
+      "end": 0.888
+    },
+    {
+      "punctuated_word": "como",
+      "start": 0.888,
+      "end": 1.128
+    },
+    {
+      "punctuated_word": "foram",
+      "start": 1.128,
+      "end": 1.228
+    },
+    {
+      "punctuated_word": "construídas",
+      "start": 1.228,
+      "end": 1.258
+    },
+    {
+      "punctuated_word": "as",
+      "start": 1.258,
+      "end": 1.288
+    },
+    {
+      "punctuated_word": "pirâmides",
+      "start": 1.288,
+      "end": 2.248
+    },
+    {
+      "punctuated_word": "antiguas?",
+      "start": 2.248,
+      "end": 2.268
+    },
+    {
+      "punctuated_word": "Estes",
+      "start": 3.328,
+      "end": 3.948
+    },
+    {
+      "punctuated_word": "maravilhosos",
+      "start": 3.948,
+      "end": 4.148
+    },
+    {
+      "punctuated_word": "arquitetos",
+      "start": 4.148,
+      "end": 4.728
+    },
+    {
+      "punctuated_word": "continuam",
+      "start": 4.728,
+      "end": 5.848
+    },
+    {
+      "punctuated_word": "a",
+      "start": 5.848,
+      "end": 6.068
+    },
+    {
+      "punctuated_word": "incomodar",
+      "start": 6.068,
+      "end": 6.288
+    },
+    {
+      "punctuated_word": "expertos",
+      "start": 6.288,
+      "end": 7.028
+    },
+    {
+      "punctuated_word": "e",
+      "start": 7.028,
+      "end": 7.168
+    },
+    {
+      "punctuated_word": "entusiastas.",
+      "start": 7.168,
+      "end": 7.888
+    },
+    {
+      "punctuated_word": "Construídos",
+      "start": 8.368,
+      "end": 9.588
+    },
+    {
+      "punctuated_word": "há",
+      "start": 9.588,
+      "end": 9.768
+    },
+    {
+      "punctuated_word": "mais",
+      "start": 9.768,
+      "end": 9.868
+    },
+    {
+      "punctuated_word": "de",
+      "start": 9.868,
+      "end": 9.948
+    },
+    {
+      "punctuated_word": "4.500",
+      "start": 9.948,
+      "end": 10.908
+    },
+    {
+      "punctuated_word": "anos,",
+      "start": 10.908,
+      "end": 11.488
+    },
+    {
+      "punctuated_word": "a",
+      "start": 11.808,
+      "end": 12.328
+    },
+    {
+      "punctuated_word": "Grande",
+      "start": 12.328,
+      "end": 12.608
+    },
+    {
+      "punctuated_word": "Pirâmide",
+      "start": 12.608,
+      "end": 13.008
+    },
+    {
+      "punctuated_word": "de",
+      "start": 13.008,
+      "end": 13.148
+    },
+    {
+      "punctuated_word": "Giza,",
+      "start": 13.148,
+      "end": 13.528
+    },
+    {
+      "punctuated_word": "por",
+      "start": 13.748,
+      "end": 13.868
+    },
+    {
+      "punctuated_word": "um,",
+      "start": 13.868,
+      "end": 14.248
+    },
+    {
+      "punctuated_word": "foi",
+      "start": 14.328,
+      "end": 14.748
+    },
+    {
+      "punctuated_word": "a",
+      "start": 14.748,
+      "end": 14.928
+    },
+    {
+      "punctuated_word": "maior",
+      "start": 14.928,
+      "end": 15.448
+    },
+    {
+      "punctuated_word": "estrutura",
+      "start": 15.448,
+      "end": 16.568
+    },
+    {
+      "punctuated_word": "feita",
+      "start": 16.568,
+      "end": 16.573
+    },
+    {
+      "punctuated_word": "por",
+      "start": 16.573,
+      "end": 16.575
+    },
+    {
+      "punctuated_word": "homem",
+      "start": 16.575,
+      "end": 16.681
+    },
+    {
+      "punctuated_word": "por",
+      "start": 16.681,
+      "end": 16.788
+    },
+    {
+      "punctuated_word": "mais",
+      "start": 16.788,
+      "end": 17.028
+    },
+    {
+      "punctuated_word": "de",
+      "start": 17.028,
+      "end": 17.188
+    },
+    {
+      "punctuated_word": "3.800",
+      "start": 17.188,
+      "end": 18.368
+    },
+    {
+      "punctuated_word": "anos.",
+      "start": 18.368,
+      "end": 19.008
+    },
+    {
+      "punctuated_word": "Com",
+      "start": 19.588,
+      "end": 19.828
+    },
+    {
+      "punctuated_word": "engenharia",
+      "start": 19.828,
+      "end": 21.048
+    },
+    {
+      "punctuated_word": "precisa,",
+      "start": 21.048,
+      "end": 21.127
+    },
+    {
+      "punctuated_word": "cada",
+      "start": 21.128,
+      "end": 21.708
+    },
+    {
+      "punctuated_word": "bloco",
+      "start": 21.708,
+      "end": 22.568
+    },
+    {
+      "punctuated_word": "de",
+      "start": 22.568,
+      "end": 22.573
+    },
+    {
+      "punctuated_word": "pedra",
+      "start": 22.573,
+      "end": 22.75
+    },
+    {
+      "punctuated_word": "pesando",
+      "start": 22.75,
+      "end": 22.928
+    },
+    {
+      "punctuated_word": "toneladas",
+      "start": 22.928,
+      "end": 23.448
+    },
+    {
+      "punctuated_word": "foi",
+      "start": 23.448,
+      "end": 23.868
+    },
+    {
+      "punctuated_word": "colocado",
+      "start": 23.868,
+      "end": 23.968
+    },
+    {
+      "punctuated_word": "meticulosamente.",
+      "start": 23.968,
+      "end": 24.708
+    },
+    {
+      "punctuated_word": "As",
+      "start": 25.54,
+      "end": 25.66
+    },
+    {
+      "punctuated_word": "teorias",
+      "start": 25.66,
+      "end": 25.98
+    },
+    {
+      "punctuated_word": "de",
+      "start": 25.98,
+      "end": 26.12
+    },
+    {
+      "punctuated_word": "sua",
+      "start": 26.12,
+      "end": 26.28
+    },
+    {
+      "punctuated_word": "construção",
+      "start": 26.28,
+      "end": 26.9
+    },
+    {
+      "punctuated_word": "variam",
+      "start": 26.9,
+      "end": 27.32
+    },
+    {
+      "punctuated_word": "de",
+      "start": 27.32,
+      "end": 27.54
+    },
+    {
+      "punctuated_word": "intervenção",
+      "start": 27.54,
+      "end": 28.76
+    },
+    {
+      "punctuated_word": "alienígena",
+      "start": 28.76,
+      "end": 29.04
+    },
+    {
+      "punctuated_word": "a",
+      "start": 29.04,
+      "end": 29.32
+    },
+    {
+      "punctuated_word": "tecnologia",
+      "start": 29.32,
+      "end": 31
+    },
+    {
+      "punctuated_word": "antiga",
+      "start": 31,
+      "end": 31.05
+    },
+    {
+      "punctuated_word": "avançada.",
+      "start": 31.05,
+      "end": 31.1
+    },
+    {
+      "punctuated_word": "Mas",
+      "start": 31.6,
+      "end": 31.84
+    },
+    {
+      "punctuated_word": "a",
+      "start": 31.84,
+      "end": 31.98
+    },
+    {
+      "punctuated_word": "pergunta",
+      "start": 31.98,
+      "end": 32.64
+    },
+    {
+      "punctuated_word": "real",
+      "start": 32.64,
+      "end": 33.15
+    },
+    {
+      "punctuated_word": "permanece.",
+      "start": 33.15,
+      "end": 33.66
+    },
+    {
+      "punctuated_word": "Como",
+      "start": 33.92,
+      "end": 34.46
+    },
+    {
+      "punctuated_word": "os",
+      "start": 34.46,
+      "end": 34.68
+    },
+    {
+      "punctuated_word": "egípcios",
+      "start": 34.68,
+      "end": 35.26
+    },
+    {
+      "punctuated_word": "conseguiram",
+      "start": 35.26,
+      "end": 35.62
+    },
+    {
+      "punctuated_word": "um",
+      "start": 35.62,
+      "end": 36.02
+    },
+    {
+      "punctuated_word": "feito",
+      "start": 36.02,
+      "end": 36.09
+    },
+    {
+      "punctuated_word": "tão",
+      "start": 36.09,
+      "end": 36.16
+    },
+    {
+      "punctuated_word": "incrível",
+      "start": 36.16,
+      "end": 36.8
+    },
+    {
+      "punctuated_word": "com",
+      "start": 36.8,
+      "end": 37.4
+    },
+    {
+      "punctuated_word": "as",
+      "start": 37.4,
+      "end": 37.54
+    },
+    {
+      "punctuated_word": "ferramentas",
+      "start": 37.54,
+      "end": 37.88
+    },
+    {
+      "punctuated_word": "e",
+      "start": 37.88,
+      "end": 38.26
+    },
+    {
+      "punctuated_word": "conhecimento",
+      "start": 38.26,
+      "end": 38.62
+    },
+    {
+      "punctuated_word": "do",
+      "start": 38.62,
+      "end": 38.78
+    },
+    {
+      "punctuated_word": "seu",
+      "start": 38.78,
+      "end": 38.94
+    },
+    {
+      "punctuated_word": "tempo?",
+      "start": 38.94,
+      "end": 39.3
+    },
+    {
+      "punctuated_word": "O",
+      "start": 39.52,
+      "end": 40.02
+    },
+    {
+      "punctuated_word": "mistério",
+      "start": 40.02,
+      "end": 40.46
+    },
+    {
+      "punctuated_word": "das",
+      "start": 40.46,
+      "end": 40.7
+    },
+    {
+      "punctuated_word": "pirâmides",
+      "start": 40.7,
+      "end": 41.26
+    },
+    {
+      "punctuated_word": "mantém",
+      "start": 41.26,
+      "end": 41.54
+    },
+    {
+      "punctuated_word": "nossa",
+      "start": 41.54,
+      "end": 41.74
+    },
+    {
+      "punctuated_word": "curiosidade",
+      "start": 41.74,
+      "end": 42.42
+    },
+    {
+      "punctuated_word": "vivo,",
+      "start": 42.42,
+      "end": 42.92
+    },
+    {
+      "punctuated_word": "revelando",
+      "start": 43.42,
+      "end": 43.88
+    },
+    {
+      "punctuated_word": "a",
+      "start": 43.88,
+      "end": 44.08
+    },
+    {
+      "punctuated_word": "ingenuidade",
+      "start": 44.08,
+      "end": 44.66
+    },
+    {
+      "punctuated_word": "de",
+      "start": 44.66,
+      "end": 44.84
+    },
+    {
+      "punctuated_word": "nossos",
+      "start": 44.84,
+      "end": 44.98
+    },
+    {
+      "punctuated_word": "ancestros.",
+      "start": 44.98,
+      "end": 45.7
+    }
+  ]
+}

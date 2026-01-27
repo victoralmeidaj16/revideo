@@ -1,0 +1,77 @@
+{
+  "audioUrl": "8d8a09c5-3b88-4323-b2cb-42cfab2e4a65-audio.wav",
+  "images": [
+    "/8d8a09c5-3b88-4323-b2cb-42cfab2e4a65-image-0.png",
+    "/8d8a09c5-3b88-4323-b2cb-42cfab2e4a65-image-1.png",
+    "/8d8a09c5-3b88-4323-b2cb-42cfab2e4a65-image-2.png",
+    "/8d8a09c5-3b88-4323-b2cb-42cfab2e4a65-image-3.png",
+    "/8d8a09c5-3b88-4323-b2cb-42cfab2e4a65-image-4.png"
+  ],
+  "words": [
+    {
+      "punctuated_word": "Aventuras",
+      "start": 29.29,
+      "end": 30.05
+    },
+    {
+      "punctuated_word": "in",
+      "start": 30.05,
+      "end": 30.25
+    },
+    {
+      "punctuated_word": "Porto",
+      "start": 30.25,
+      "end": 30.57
+    },
+    {
+      "punctuated_word": "Bello.",
+      "start": 30.57,
+      "end": 31.01
+    },
+    {
+      "punctuated_word": "Y",
+      "start": 31.01,
+      "end": 31.25
+    },
+    {
+      "punctuated_word": "quei",
+      "start": 31.25,
+      "end": 31.57
+    },
+    {
+      "punctuated_word": "sabe",
+      "start": 31.57,
+      "end": 32.01
+    },
+    {
+      "punctuated_word": "o",
+      "start": 32.09,
+      "end": 32.37
+    },
+    {
+      "punctuated_word": "prossimo",
+      "start": 32.37,
+      "end": 33.01
+    },
+    {
+      "punctuated_word": "granji",
+      "start": 33.01,
+      "end": 33.45
+    },
+    {
+      "punctuated_word": "tesoro",
+      "start": 33.45,
+      "end": 33.97
+    },
+    {
+      "punctuated_word": "Descoberto",
+      "start": 33.97,
+      "end": 34.89
+    },
+    {
+      "punctuated_word": "Poggio.",
+      "start": 34.89,
+      "end": 35.53
+    }
+  ]
+}

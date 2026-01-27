@@ -1,0 +1,72 @@
+{
+  "audioUrl": "fd38707b-f0e8-4145-8250-ac4bc5f316c9-audio.wav",
+  "images": [
+    "/fd38707b-f0e8-4145-8250-ac4bc5f316c9-image-0.png",
+    "/fd38707b-f0e8-4145-8250-ac4bc5f316c9-image-1.png",
+    "/fd38707b-f0e8-4145-8250-ac4bc5f316c9-image-2.png",
+    "/fd38707b-f0e8-4145-8250-ac4bc5f316c9-image-3.png",
+    "/fd38707b-f0e8-4145-8250-ac4bc5f316c9-image-4.png"
+  ],
+  "words": [
+    {
+      "punctuated_word": "Aventuri",
+      "start": 28.07,
+      "end": 28.71
+    },
+    {
+      "punctuated_word": "saying",
+      "start": 28.71,
+      "end": 28.91
+    },
+    {
+      "punctuated_word": "porto",
+      "start": 28.91,
+      "end": 29.43
+    },
+    {
+      "punctuated_word": "bello",
+      "start": 29.43,
+      "end": 29.71
+    },
+    {
+      "punctuated_word": "I",
+      "start": 29.71,
+      "end": 29.87
+    },
+    {
+      "punctuated_word": "can",
+      "start": 29.87,
+      "end": 30.11
+    },
+    {
+      "punctuated_word": "sabi",
+      "start": 30.11,
+      "end": 30.71
+    },
+    {
+      "punctuated_word": "uprosimo",
+      "start": 30.71,
+      "end": 31.43
+    },
+    {
+      "punctuated_word": "granjite",
+      "start": 31.43,
+      "end": 31.83
+    },
+    {
+      "punctuated_word": "zorugiscoberto",
+      "start": 31.83,
+      "end": 32.99
+    },
+    {
+      "punctuated_word": "podicer",
+      "start": 32.99,
+      "end": 33.55
+    },
+    {
+      "punctuated_word": "SEO.",
+      "start": 33.55,
+      "end": 33.99
+    }
+  ]
+}
