@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import multer from 'multer';
+import path from 'path';
 import { createAssets } from './get-assets';
 import { getVideoScript, generateProImagePrompts } from './utils';
 import 'dotenv/config';
@@ -8,9 +10,52 @@ import 'dotenv/config';
 const app = express();
 const port = 3001;
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: './public/uploads/',
+    filename: (req, file, cb) => {
+        const uniqueName = `ref-${Date.now()}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Formato inválido. Use JPEG, PNG ou WebP.'));
+        }
+    }
+});
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve frontend files
+
+// Ensure uploads directory exists
+import fs from 'fs';
+if (!fs.existsSync('./public/uploads')) {
+    fs.mkdirSync('./public/uploads', { recursive: true });
+}
+
+// Upload reference image endpoint
+app.post('/api/upload-reference', upload.single('referenceImage'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'Nenhuma imagem enviada' });
+        }
+        const imageUrl = `http://localhost:${port}/uploads/${req.file.filename}`;
+        console.log(`Reference image uploaded: ${imageUrl}`);
+        res.json({ success: true, imageUrl });
+    } catch (error: any) {
+        console.error('Upload failed:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 app.post('/api/generate-script', async (req, res) => {
     try {
@@ -26,10 +71,13 @@ app.post('/api/generate-script', async (req, res) => {
 
 app.post('/api/generate', async (req, res) => {
     try {
-        const { script, voice, imagePrompts } = req.body;
+        const { script, voice, imagePrompts, referenceImageUrl } = req.body;
         console.log(`Received video generation request with script length: ${script?.length}, voice: ${voice}`);
+        if (referenceImageUrl) {
+            console.log(`Using reference image: ${referenceImageUrl}`);
+        }
 
-        await createAssets(script, voice, imagePrompts);
+        await createAssets(script, voice, imagePrompts, referenceImageUrl);
 
         res.json({ success: true, message: 'Assets generated successfully' });
     } catch (error: any) {

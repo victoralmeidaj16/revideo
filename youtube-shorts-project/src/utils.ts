@@ -135,21 +135,31 @@ export async function dalleGenerate(prompt: string, savePath: string) {
 
 import Replicate from "replicate";
 
-export async function replicateGenerate(prompt: string, savePath: string) {
+export async function replicateGenerate(prompt: string, savePath: string, referenceImageUrl?: string) {
 	const replicate = new Replicate({
 		auth: process.env.REPLICATE_API_TOKEN,
 	});
 
+	// Build input object - conditionally add reference image for image-to-image
+	const inputParams: any = {
+		prompt: prompt,
+		negative_prompt: "nude, naked, nsfw, text, watermark, bad anatomy, bad hands, blurry, low quality",
+		width: 1024,
+		height: 1792,
+		num_outputs: 1
+	};
+
+	// If reference image is provided, add it for image-to-image generation
+	if (referenceImageUrl) {
+		inputParams.image = referenceImageUrl;
+		inputParams.image_prompt_strength = 0.35; // Moderate influence from reference
+		console.log(`Using reference image for generation: ${referenceImageUrl}`);
+	}
+
 	const output = await replicate.run(
 		"bytedance/seedream-4:cf7d431991436f19d1c8dad83fe463c729c816d7a21056c5105e75c84a0aa7e9",
 		{
-			input: {
-				prompt: prompt,
-				negative_prompt: "nude, naked, nsfw, text, watermark, bad anatomy, bad hands, blurry, low quality",
-				width: 1024,
-				height: 1792,
-				num_outputs: 1
-			}
+			input: inputParams
 		}
 	);
 

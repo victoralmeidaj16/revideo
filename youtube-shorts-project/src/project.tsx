@@ -37,8 +37,8 @@ const textSettings: captionSettings = {
   textAlign: "center",
   textBoxWidthInPercent: 70,
   fadeInAnimation: true,
-  currentWordColor: "cyan",
-  currentWordBackgroundColor: "red", // adds a colored box to the word currently spoken
+  currentWordColor: "#FFD700", // Gold color for karaoke effect
+  // currentWordBackgroundColor removed as it is not used in the new style
   shadowColor: "black",
   shadowBlur: 30
 }
@@ -196,7 +196,7 @@ function* displayWords(container: Reference<Layout>, words: Word[], settings: ca
     // Animate highlighting
     yield* all(
       opacitySignal(1, 0.2), // Quick fade in of full opacity
-      highlightCurrentWord(container, currentBatch, wordRefs, settings.currentWordColor, settings.currentWordBackgroundColor),
+      highlightCurrentWord(container, currentBatch, wordRefs, settings.currentWordColor),
     );
 
     // Remove text after batch is done
@@ -205,7 +205,7 @@ function* displayWords(container: Reference<Layout>, words: Word[], settings: ca
   }
 }
 
-function* highlightCurrentWord(container: Reference<Layout>, currentBatch: Word[], wordRefs: Reference<Txt>[], wordColor: string, backgroundColor: string) {
+function* highlightCurrentWord(container: Reference<Layout>, currentBatch: Word[], wordRefs: Reference<Txt>[], wordColor: string) {
   for (let i = 0; i < currentBatch.length; i++) {
     const word = currentBatch[i];
     const wordRef = wordRefs[i];

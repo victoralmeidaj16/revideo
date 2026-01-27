@@ -25,11 +25,14 @@ import * as fs from 'fs';
 // and update the import to be safe. 
 // If `replicateGenerate` is missing from utils, I'll fail. But I surely added it.
 
-export async function createAssets(script: string, voiceName: string, customImagePrompts?: string[]) {
+export async function createAssets(script: string, voiceName: string, customImagePrompts?: string[], referenceImageUrl?: string) {
     const jobId = uuidv4();
 
     console.log("Generating assets for provided script...")
     console.log("script", script);
+    if (referenceImageUrl) {
+        console.log("Using reference image:", referenceImageUrl);
+    }
 
     await generateAudio(script, voiceName, `./public/${jobId}-audio.wav`);
     const words = await getWordTimestamps(`./public/${jobId}-audio.wav`);
@@ -45,9 +48,8 @@ export async function createAssets(script: string, voiceName: string, customImag
             console.log(`Generated prompt for image ${index}: ${imagePrompt}`);
         }
 
-        // Use replicateGenerate if available, or dalleGenerate if that's what's currently imported.
-        // I will change the import to use replicateGenerate to match the plan.
-        await replicateGenerate(imagePrompt, `./public/${jobId}-image-${index}.png`);
+        // Pass referenceImageUrl for image-to-image generation if provided
+        await replicateGenerate(imagePrompt, `./public/${jobId}-image-${index}.png`, referenceImageUrl);
         return `/${jobId}-image-${index}.png`;
     });
 
