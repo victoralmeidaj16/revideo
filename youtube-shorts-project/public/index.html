@@ -106,18 +106,19 @@
         /* Main Layout */
         .app-container {
             display: flex;
-            gap: var(--space-xl);
             max-width: 1400px;
             margin: 0 auto;
             padding: var(--space-2xl);
             min-height: 100vh;
-            align-items: flex-start;
+            justify-content: center;
         }
 
         /* Left Panel - Main Content */
         .main-panel {
             flex: 1;
-            max-width: 680px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
             animation: fadeSlideUp 0.6s ease-out;
         }
 
@@ -398,12 +399,12 @@
             color: var(--text-muted);
         }
 
-        /* Right Panel - Status */
-        .side-panel {
-            width: 360px;
-            position: sticky;
-            top: var(--space-2xl);
-            animation: fadeSlideUp 0.6s ease-out 0.2s both;
+        /* Status Section (Moved to Main) */
+        .status-container {
+            margin-top: var(--space-xl);
+            display: none;
+            /* Hidden by default */
+            animation: fadeSlideUp 0.6s ease-out;
         }
 
         .status-card {
@@ -783,22 +784,27 @@
             </button>
         </div>
 
-        <!-- Side Panel -->
-        <div class="side-panel">
+        <!-- Status Card (Moved from Side) -->
+        <div id="statusContainer" class="status-container">
             <div class="status-card" id="statusCard">
                 <div class="status-icon-wrapper">
                     <span id="statusIcon">
-                        <!-- Feather Icon: sparkles (or star) -->
+                        <!-- Feather Icon: loader -->
                         <svg class="icon icon-lg" viewBox="0 0 24 24">
-                            <polygon
-                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                            </polygon>
+                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                            <line x1="2" y1="12" x2="6" y2="12"></line>
+                            <line x1="18" y1="12" x2="22" y2="12"></line>
+                            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
                         </svg>
                     </span>
                 </div>
-                <h3 class="status-title" id="statusTitle">Pronto para Criar</h3>
+                <h3 class="status-title" id="statusTitle">Processando...</h3>
                 <p class="status-text" id="statusText">
-                    Gere um roteiro primeiro, edite se precisar e depois clique em Gerar Vídeo para criar seu conteúdo.
+                    Gerando áudio, imagens e montando seu vídeo. Isso pode levar 1-2 minutos.
                 </p>
                 <a href="http://localhost:9000" target="_blank" id="previewLink"
                     style="display: none; text-decoration: none;">
@@ -808,9 +814,10 @@
                     </button>
                 </a>
             </div>
-
-            <!-- Tips Card REMOVED -->
         </div>
+    </div>
+
+    <!-- Side Panel Removed -->
     </div>
 
     <script>
@@ -917,6 +924,9 @@
 
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeo...';
+
+            // Show status container
+            document.getElementById('statusContainer').style.display = 'block';
 
             statusTitle.innerText = "Processando...";
             statusText.innerText = "Gerando áudio, imagens e montando seu vídeo. Isso pode levar 1-2 minutos.";
