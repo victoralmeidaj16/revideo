@@ -749,6 +749,38 @@
                 </div>
             </div>
 
+            <!-- Media Type Toggle -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">
+                            <!-- Feather Icon: film/image switch -->
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                <line x1="7" y1="2" x2="7" y2="22"></line>
+                                <line x1="17" y1="2" x2="17" y2="22"></line>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                            </svg>
+                        </span>
+                        Estilo Visual
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                    <label for="useVideoCheckbox"
+                        style="margin: 0; display: flex; align-items: center; gap: var(--space-sm); cursor: pointer;">
+                        <input type="checkbox" id="useVideoCheckbox" checked
+                            style="width: 20px; height: 20px; accent-color: var(--accent-primary);">
+                        <span style="color: var(--text-primary); font-size: 1rem;">Gerar Vídeos Animados
+                            (Minimax)</span>
+                    </label>
+                </div>
+                <p
+                    style="color: var(--text-secondary); margin-top: var(--space-xs); font-size: 0.875rem; margin-left: 32px;">
+                    Se marcado, gera vídeos de fundo (mais demorado). Se desmarcado, gera imagens estáticas (mais
+                    rápido).
+                </p>
+            </div>
+
             <!-- Scenes Card -->
             <div class="card">
                 <div class="card-header">
@@ -946,10 +978,14 @@
                 // Get reference image URL if uploaded
                 const referenceImageUrl = window.uploadedReferenceImageUrl || null;
 
+                // Get Video Mode
+                const useVideo = document.getElementById('useVideoCheckbox').checked;
+                console.log("Generating video with useVideo:", useVideo);
+
                 const response = await fetch('http://localhost:3001/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl })
+                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo })
                 });
 
                 const data = await response.json();

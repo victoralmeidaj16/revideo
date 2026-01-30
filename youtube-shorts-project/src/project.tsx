@@ -1,4 +1,4 @@
-import { Audio, Img, makeScene2D, Txt, Rect, Layout } from '@revideo/2d';
+import { Audio, Video, Img, makeScene2D, Txt, Rect, Layout } from '@revideo/2d';
 import { all, createRef, waitFor, useScene, Reference, createSignal, makeProject } from '@revideo/core';
 import metadata from './metadata.json';
 import './global.css';
@@ -29,25 +29,26 @@ interface captionSettings {
 
 const textSettings: captionSettings = {
   fontSize: 80,
-  numSimultaneousWords: 4, // how many words are shown at most simultaneously
+  numSimultaneousWords: 4,
   textColor: "white",
   fontWeight: 800,
   fontFamily: "Mulish",
-  stream: false, // if true, words appear one by one
+  stream: false,
   textAlign: "center",
   textBoxWidthInPercent: 70,
   fadeInAnimation: true,
-  currentWordColor: "#FFD700", // Gold color for karaoke effect
-  // currentWordBackgroundColor removed as it is not used in the new style
+  currentWordColor: "#FFD700",
   shadowColor: "black",
   shadowBlur: 30
 }
 
-/**
- * The Revideo scene
- */
 const scene = makeScene2D('scene', function* (view) {
-  const images = useScene().variables.get('images', [])();
+  const mediaAssets = useScene().variables.get('mediaAssets', [])();
+  const legacyVideos = useScene().variables.get('videos', [])();
+  const legacyImages = useScene().variables.get('images', [])();
+
+  const finalMedia = mediaAssets.length > 0 ? mediaAssets : (legacyVideos.length > 0 ? legacyVideos : legacyImages);
+
   const audioUrl = useScene().variables.get('audioUrl', 'none')();
   const words = useScene().variables.get('words', [])();
 
@@ -79,7 +80,7 @@ const scene = makeScene2D('scene', function* (view) {
   );
 
   yield* all(
-    displayImages(imageContainer, images, duration),
+    displayMedia(imageContainer, finalMedia, duration),
     displayWords(
       textContainer,
       words,
@@ -88,51 +89,43 @@ const scene = makeScene2D('scene', function* (view) {
   )
 });
 
-function* displayImages(container: Reference<Layout>, images: string[], totalDuration: number) {
-  const durationPerImage = totalDuration / images.length;
+function* displayMedia(container: Reference<Layout>, mediaFiles: string[], totalDuration: number) {
+  const durationPerItem = totalDuration / mediaFiles.length;
   const fadeDuration = 1.0;
 
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i];
-    const ref = createRef<Img>();
-    // Alternating zoom: Even = Zoom In (1 -> 1.05), Odd = Zoom Out (1.05 -> 1)
-    const startScale = i % 2 === 0 ? 1 : 1.05;
-    const endScale = i % 2 === 0 ? 1.05 : 1;
+  for (let i = 0; i < mediaFiles.length; i++) {
+    const file = mediaFiles[i];
+    const isVideo = file.toLowerCase().endsWith('.mp4');
+    const ref = createRef<Layout>();
 
-    container().add(<Img
-      src={img}
-      size={["100%", "100%"]}
-      ref={ref}
-      zIndex={i} // Ensure new images are on top
-      scale={startScale}
-      opacity={0} // Start invisible for fade in
-    />);
-
-    // Animate: Fade In + Continuous Zoom
-    yield* all(
-      ref().opacity(1, fadeDuration), // Smooth fade in
-      ref().scale(endScale, durationPerImage) // Slow zoom effect
+    container().add(
+      <Layout ref={ref} size={['100%', '100%']} opacity={0} zIndex={i}>
+        {isVideo ? (
+          <Video
+            src={file}
+            size={["100%", "100%"]}
+            play={true}
+            loop={true}
+          />
+        ) : (
+          <Img
+            src={file}
+            size={["100%", "100%"]}
+          />
+        )}
+      </Layout>
     );
 
-    // Wait for the remaining duration of this slide (minus fade time we just yielded? No, 'all' finishes when max duration finishes)
-    // Actually 'all' waits for the longest. 
-    // We want the next slide to start overlapping or just after?
-    // Let's keep it simple: The 'all' above takes 'durationPerImage' (assuming fadeDuration < durationPerImage).
-    // So this slide is done.
-
-    // Note: The previous slide is covered by this one (zIndex i).
-    // We don't remove previous slides to avoid blips, they are just covered.
+    yield* ref().opacity(1, fadeDuration);
+    yield* waitFor(durationPerItem - fadeDuration);
   }
 }
 
 function* displayWords(container: Reference<Layout>, words: Word[], settings: captionSettings) {
-  // Ensure we start checking from time 0, but the first wait depends on the first word
   let currentTime = 0;
 
   for (let i = 0; i < words.length; i += settings.numSimultaneousWords) {
     const currentBatch = words.slice(i, i + settings.numSimultaneousWords);
-
-    // Calculate wait before this batch appears
     const startOfBatch = currentBatch[0].start;
     const waitBefore = Math.max(0, startOfBatch - currentTime);
 
@@ -141,21 +134,19 @@ function* displayWords(container: Reference<Layout>, words: Word[], settings: ca
 
     const textRef = createRef<Txt>();
 
-    // Display the batch container
     yield container().add(
       <Txt
         width={`${settings.textBoxWidthInPercent}%`}
         textAlign={settings.textAlign}
         ref={textRef}
         textWrap={true}
-        zIndex={1000} // High zIndex ensuring visibility over images
+        zIndex={1000}
       />
     );
 
     const wordRefs: Reference<Txt>[] = [];
     const opacitySignal = createSignal(settings.fadeInAnimation ? 0.5 : 1);
 
-    // Render words in the batch
     for (let j = 0; j < currentBatch.length; j++) {
       const word = currentBatch[j];
       const optionalSpace = j === currentBatch.length - 1 ? "" : " ";
@@ -180,26 +171,17 @@ function* displayWords(container: Reference<Layout>, words: Word[], settings: ca
         </Txt>
       );
       textRef().add(<Txt fontSize={settings.fontSize}>{optionalSpace}</Txt>);
-
-      // Yield momentarily to allow layout calculation if needed, 
-      // though strictly synchronous adding usually works in recent Revideo.
-      // We push ref to array for highlighting later.
       wordRefs.push(wordRef);
     }
 
-    // Determine how long this batch stays on screen
-    // It stays until the last word ends, OR until the next batch starts (if we want continuous flow)
-    // But typically we want it to stay at least until the last word ends.
     const endOfBatch = currentBatch[currentBatch.length - 1].end;
     const durationOfBatch = endOfBatch - startOfBatch;
 
-    // Animate highlighting
     yield* all(
-      opacitySignal(1, 0.2), // Quick fade in of full opacity
-      highlightCurrentWord(container, currentBatch, wordRefs, settings.currentWordColor),
+      opacitySignal(1, 0.2),
+      highlightCurrentWord(container, currentBatch, wordRefs, settings.currentWordColor!),
     );
 
-    // Remove text after batch is done
     textRef().remove();
     currentTime = endOfBatch;
   }
@@ -210,7 +192,6 @@ function* highlightCurrentWord(container: Reference<Layout>, currentBatch: Word[
     const word = currentBatch[i];
     const wordRef = wordRefs[i];
 
-    // Handle gap between previous word and current word
     if (i > 0) {
       const prevWord = currentBatch[i - 1];
       const gap = word.start - prevWord.end;
@@ -219,24 +200,18 @@ function* highlightCurrentWord(container: Reference<Layout>, currentBatch: Word[
       }
     }
 
-    // Highlight
     const originalColor = wordRef().fill();
     wordRef().fill(wordColor);
-    wordRef().scale(1.1, 0.1); // Subtle pop effect
+    wordRef().scale(1.1, 0.1);
 
-    // Wait until word ends
     const duration = word.end - word.start;
     yield* waitFor(duration);
 
-    // Unhighlight
     wordRef().fill(originalColor);
     wordRef().scale(1, 0.1);
   }
 }
 
-/**
- * The final revideo project
- */
 export default makeProject({
   scenes: [scene],
   variables: metadata,

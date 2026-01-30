@@ -237,7 +237,7 @@
                     "messages": [
                         {
                             "role": "user",
-                            "content": "={{ '\n    You are an expert AI Art Director specializing in hyper-realistic, high-end commercial photography.\n    \n    Your task is to create 5 distinct, sequential image prompts to accompany a video script about \"' + $('Webhook').item.json.body.topic + '\".\n    \n    The script is: \"' + $('OpenAI - Generate Script').item.json.content + '\".\n    \n    Break the script into 5 chronological scenes. For EACH scene, write a prompt following this EXACT style structure, but adapting the subject to the scene:\n\n    \"A hyper-realistic vertical lifestyle photo (Ratio 4:5, 1080×1350) shot with directional soft light in a [describe environment]. Captured on a high-end mirrorless camera with a 50 mm lens at f/2.0. The camera is positioned in [describe angle], creating a subtle sense of protagonists and confidence. The subject is [describe subject and action detailed].\"\n\n    Return ONLY a valid JSON array of strings. Do not include markdown code block notation.\n    ' }}"
+                            "content": "={{ '\n    You are an expert AI Cinematographer specializing in high-end commercial video production.\n    \n    Your task is to create 5 distinct, sequential VIDEO prompts to accompany a video script about \"' + $('Webhook').item.json.body.topic + '\".\n    \n    The script is: \"' + $('OpenAI - Generate Script').item.json.content + '\".\n    \n    Break the script into 5 chronological scenes. For EACH scene, write a prompt following this EXACT style structure, focusing on MOTION and VISUALS:\n\n    \"A cinematic vertical video shot (Ratio 9:16) in 4k resolution. [describe environment and lighting]. Camera movement is [describe motion, e.g., slow pan, drone shot, dolly in]. The action shows [describe subject and specific movement]. High production value, hyper-realistic, detailed textures.\"\n\n    Return ONLY a valid JSON array of strings. Do not include markdown code block notation.\n    ' }}"
                         }
                     ]
                 },
@@ -288,7 +288,7 @@
         {
             "parameters": {
                 "method": "POST",
-                "url": "https://api.replicate.com/v1/predictions",
+                "url": "https://api.replicate.com/v1/models/minimax/video-01/predictions",
                 "authentication": "genericCredentialType",
                 "genericAuthType": "headerAuth",
                 "sendBody": true,
@@ -296,12 +296,8 @@
                 "bodyParameters": {
                     "parameters": [
                         {
-                            "name": "version",
-                            "value": "cf7d431991436f19d1c8dad83fe463c729c816d7a21056c5105e75c84a0aa7e9"
-                        },
-                        {
                             "name": "input",
-                            "value": "={{ {\n  \"prompt\": $json.prompt,\n  \"negative_prompt\": \"nude, naked, nsfw, text, watermark, bad anatomy, bad hands, blurry, low quality\",\n  \"width\": 1024,\n  \"height\": 1792,\n  \"num_outputs\": 1,\n  \"image\": $('Webhook').item.json.body.referenceImageUrl || undefined,\n  \"image_prompt_strength\": $('Webhook').item.json.body.referenceImageUrl ? 0.35 : undefined\n} }}"
+                            "value": "={{ {\n  \"prompt\": $json.prompt,\n  \"prompt_optimizer\": true\n} }}"
                         }
                     ]
                 },
@@ -400,7 +396,7 @@
         },
         {
             "parameters": {
-                "fileName": "={{ '/Users/victoralmeidaj16/Downloads/revideo/youtube-shorts-project/public/n8n-image-' + $('SplitInBatches').item.json.index + '.png' }}"
+                "fileName": "={{ '/Users/victoralmeidaj16/Downloads/revideo/youtube-shorts-project/public/n8n-video-' + $('SplitInBatches').item.json.index + '.mp4' }}"
             },
             "name": "Write Image File",
             "type": "n8n-nodes-base.writeBinaryFile",
@@ -439,7 +435,7 @@
         {
             "parameters": {
                 "mode": "runOnceForEachItem",
-                "jsCode": "const words = $('AssemblyAI - Get Result').item.json.words.map(w => ({\n  punctuated_word: w.text,\n  start: w.start / 1000,\n  end: w.end / 1000\n}));\n\nconst images = $('Aggregate').item.json.map(i => `/n8n-image-${i.json.index}.png`);\n// Sort images by index just in case\n// Actually aggregate preserves order usually, but let's assume index is reliable\n// Ideally we should have kept the original order. \n// The SplitInBatches index is available.\n\n// We need to match images to the correct order.\n// Let's just generate the paths based on 0-4 indices since we know we loop 5 times.\nconst imagePaths = Array.from({length: 5}, (_, i) => `/n8n-image-${i}.png`);\n\nconst metadata = {\n  audioUrl: \"n8n-audio.wav\",\n  images: imagePaths,\n  words: words\n};\n\nreturn { json: metadata };"
+                "jsCode": "const words = $('AssemblyAI - Get Result').item.json.words.map(w => ({\n  punctuated_word: w.text,\n  start: w.start / 1000,\n  end: w.end / 1000\n}));\n\nconst videos = $('Aggregate').item.json.map(i => `/n8n-video-${i.json.index}.mp4`);\n\n// Generate the paths based on 0-4 indices since we know we loop 5 times.\nconst videoPaths = Array.from({length: 5}, (_, i) => `/n8n-video-${i}.mp4`);\n\nconst metadata = {\n  audioUrl: \"n8n-audio.wav\",\n  videos: videoPaths,\n  words: words\n};\n\nreturn { json: metadata };"
             },
             "name": "Format Metadata",
             "type": "n8n-nodes-base.code",

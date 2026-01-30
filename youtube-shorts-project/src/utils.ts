@@ -177,6 +177,79 @@ export async function replicateGenerate(prompt: string, savePath: string, refere
 	await fs.promises.writeFile(savePath, buffer);
 }
 
+export async function minimaxGenerate(prompt: string, savePath: string, imagePath?: string) {
+	const replicate = new Replicate({
+		auth: process.env.REPLICATE_API_TOKEN,
+	});
+
+	console.log(`Generating video with Minimax for prompt: ${prompt}`);
+	if (imagePath) {
+		console.log(`Using input image for animation: ${imagePath}`);
+	}
+
+	const inputParams: any = {
+		prompt: prompt,
+		prompt_optimizer: true
+	};
+
+	if (imagePath) {
+		inputParams.first_frame_image = fs.createReadStream(imagePath);
+	}
+
+	const output = await replicate.run(
+		"minimax/video-01",
+		{
+			input: inputParams
+		}
+	);
+
+	if (!output) {
+		throw new Error("No output from Replicate (Minimax)");
+	}
+
+	// Minimax on Replicate usually returns a direct string URL (or a stream, usually string URL) or an array of [url]
+	console.log("Minimax raw output:", output);
+
+	// Cast to any to handle type simply
+	const url = Array.isArray(output) ? output[0] : String(output);
+	console.log("Minimax Video URL:", url);
+
+	const responseVideo = await axios.get(url, { responseType: "arraybuffer" });
+	const buffer = Buffer.from(responseVideo.data, "binary");
+	await fs.promises.writeFile(savePath, buffer);
+}
+
+export async function generateProVideoPrompts(script: string, topic: string) {
+	const prompt = `
+    You are an expert AI Cinematographer specializing in high-end commercial video production.
+    
+    Your task is to create 5 distinct, sequential VIDEO prompts to accompany a video script about "${topic}".
+    
+    The script is: "${script}".
+    
+    Break the script into 5 chronological scenes. For EACH scene, write a prompt following this EXACT style structure, focusing on MOTION and VISUALS:
+
+    "A cinematic vertical video shot (Ratio 9:16) in 4k resolution. [describe environment and lighting]. Camera movement is [describe motion, e.g., slow pan, drone shot, dolly in]. The action shows [describe subject and specific movement]. High production value, hyper-realistic, detailed textures."
+
+    Return ONLY a valid JSON array of strings, for example: ["Prompt 1...", "Prompt 2...", ...]. Do not include markdown code block notation.
+    `;
+
+	const chatCompletion = await openai.chat.completions.create({
+		messages: [{ role: 'user', content: prompt }],
+		model: 'gpt-4-turbo-preview',
+	});
+
+	const content = chatCompletion.choices[0].message.content || "[]";
+	try {
+		// Remove markdown if present (e.g. ```json ... ```)
+		const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim();
+		return JSON.parse(cleanContent);
+	} catch (e) {
+		console.error("Failed to parse pro prompts:", content);
+		return [];
+	}
+}
+
 export async function generateProImagePrompts(script: string, topic: string) {
 	const prompt = `
     You are an expert AI Art Director specializing in hyper-realistic, high-end commercial photography.

@@ -1,412 +1,427 @@
 {
-  "audioUrl": "908c1ec0-ff8a-43aa-8ea9-3ac94e4a3188-audio.wav",
+  "audioUrl": "af4d100c-91db-4b23-b8e0-abb5c6981a9a-audio.wav",
   "images": [
-    "/908c1ec0-ff8a-43aa-8ea9-3ac94e4a3188-image-0.png",
-    "/908c1ec0-ff8a-43aa-8ea9-3ac94e4a3188-image-1.png",
-    "/908c1ec0-ff8a-43aa-8ea9-3ac94e4a3188-image-2.png",
-    "/908c1ec0-ff8a-43aa-8ea9-3ac94e4a3188-image-3.png",
-    "/908c1ec0-ff8a-43aa-8ea9-3ac94e4a3188-image-4.png"
+    "/af4d100c-91db-4b23-b8e0-abb5c6981a9a-image-0.png",
+    "/af4d100c-91db-4b23-b8e0-abb5c6981a9a-image-1.png",
+    "/af4d100c-91db-4b23-b8e0-abb5c6981a9a-image-2.png",
+    "/af4d100c-91db-4b23-b8e0-abb5c6981a9a-image-3.png",
+    "/af4d100c-91db-4b23-b8e0-abb5c6981a9a-image-4.png"
   ],
   "words": [
     {
       "punctuated_word": "Você",
       "start": 0.031,
-      "end": 0.411
+      "end": 0.451
     },
     {
       "punctuated_word": "sabia",
-      "start": 0.411,
-      "end": 0.871
+      "start": 0.451,
+      "end": 0.971
     },
     {
       "punctuated_word": "que",
-      "start": 0.871,
-      "end": 1.051
+      "start": 0.971,
+      "end": 1.211
     },
     {
       "punctuated_word": "a",
-      "start": 1.051,
-      "end": 1.171
+      "start": 1.211,
+      "end": 1.331
     },
     {
-      "punctuated_word": "psicologia",
-      "start": 1.171,
-      "end": 1.811
+      "punctuated_word": "história",
+      "start": 1.331,
+      "end": 1.691
     },
     {
-      "punctuated_word": "pode",
-      "start": 1.811,
+      "punctuated_word": "dos",
+      "start": 1.691,
+      "end": 1.911
+    },
+    {
+      "punctuated_word": "três",
+      "start": 1.911,
       "end": 2.151
     },
     {
-      "punctuated_word": "explicar",
+      "punctuated_word": "porquinhos",
       "start": 2.151,
       "end": 2.691
     },
     {
-      "punctuated_word": "porque",
+      "punctuated_word": "é",
       "start": 2.691,
       "end": 3.191
     },
     {
-      "punctuated_word": "nos",
+      "punctuated_word": "mais",
       "start": 3.191,
-      "end": 3.431
+      "end": 3.551
     },
     {
-      "punctuated_word": "apaixonamos?",
-      "start": 3.431,
-      "end": 4.211
+      "punctuated_word": "do",
+      "start": 3.551,
+      "end": 3.731
     },
     {
-      "punctuated_word": "Isso",
-      "start": 4.691,
-      "end": 4.911
-    },
-    {
-      "punctuated_word": "mesmo.",
-      "start": 4.911,
-      "end": 5.291
-    },
-    {
-      "punctuated_word": "A",
-      "start": 5.771,
-      "end": 5.871
-    },
-    {
-      "punctuated_word": "atração",
-      "start": 5.871,
-      "end": 6.351
-    },
-    {
-      "punctuated_word": "entre",
-      "start": 6.351,
-      "end": 6.651
-    },
-    {
-      "punctuated_word": "pessoas",
-      "start": 6.651,
-      "end": 7.171
-    },
-    {
-      "punctuated_word": "não",
-      "start": 7.171,
-      "end": 7.411
-    },
-    {
-      "punctuated_word": "é",
-      "start": 7.411,
-      "end": 7.531
+      "punctuated_word": "que",
+      "start": 3.731,
+      "end": 3.851
     },
     {
       "punctuated_word": "apenas",
-      "start": 7.531,
-      "end": 7.931
+      "start": 3.851,
+      "end": 4.211
     },
     {
-      "punctuated_word": "química",
-      "start": 7.931,
-      "end": 8.491
+      "punctuated_word": "uma",
+      "start": 4.211,
+      "end": 4.471
     },
     {
-      "punctuated_word": "ou",
-      "start": 8.491,
-      "end": 8.711
+      "punctuated_word": "simples",
+      "start": 4.471,
+      "end": 4.951
     },
     {
-      "punctuated_word": "sorte,",
-      "start": 8.711,
-      "end": 9.151
+      "punctuated_word": "fábula",
+      "start": 4.951,
+      "end": 5.511
     },
     {
-      "punctuated_word": "mas",
-      "start": 9.431,
-      "end": 9.831
+      "punctuated_word": "infantil?",
+      "start": 5.511,
+      "end": 6.211
     },
     {
-      "punctuated_word": "um",
-      "start": 9.831,
-      "end": 10.011
+      "punctuated_word": "Originalmente,",
+      "start": 7.191,
+      "end": 8.131
     },
     {
-      "punctuated_word": "complexo",
-      "start": 10.011,
-      "end": 10.771
+      "punctuated_word": "essa",
+      "start": 8.271,
+      "end": 8.511
     },
     {
-      "punctuated_word": "processo",
-      "start": 10.771,
-      "end": 11.311
+      "punctuated_word": "história",
+      "start": 8.511,
+      "end": 8.991
     },
     {
-      "punctuated_word": "psicológico.",
-      "start": 11.311,
-      "end": 12.351
+      "punctuated_word": "ensina",
+      "start": 8.991,
+      "end": 9.491
     },
     {
-      "punctuated_word": "Estudos",
-      "start": 12.951,
-      "end": 13.231
-    },
-    {
-      "punctuated_word": "mostram",
-      "start": 13.231,
-      "end": 13.731
-    },
-    {
-      "punctuated_word": "que",
-      "start": 13.731,
-      "end": 13.911
-    },
-    {
-      "punctuated_word": "os",
-      "start": 13.911,
-      "end": 14.051
-    },
-    {
-      "punctuated_word": "fatores",
-      "start": 14.051,
-      "end": 14.471
-    },
-    {
-      "punctuated_word": "que",
-      "start": 14.471,
-      "end": 14.671
-    },
-    {
-      "punctuated_word": "nos",
-      "start": 14.671,
-      "end": 14.851
-    },
-    {
-      "punctuated_word": "levam",
-      "start": 14.851,
-      "end": 15.211
+      "punctuated_word": "sobre",
+      "start": 9.491,
+      "end": 9.851
     },
     {
       "punctuated_word": "a",
-      "start": 15.211,
-      "end": 15.351
+      "start": 9.851,
+      "end": 9.991
     },
     {
-      "punctuated_word": "escolher",
-      "start": 15.351,
-      "end": 15.751
-    },
-    {
-      "punctuated_word": "nossos",
-      "start": 15.751,
-      "end": 16.091
-    },
-    {
-      "punctuated_word": "parceiros",
-      "start": 16.091,
-      "end": 16.711
-    },
-    {
-      "punctuated_word": "incluem",
-      "start": 16.711,
-      "end": 17.551
-    },
-    {
-      "punctuated_word": "similaridade,",
-      "start": 17.551,
-      "end": 18.571
-    },
-    {
-      "punctuated_word": "proximidade,",
-      "start": 18.951,
-      "end": 19.771
-    },
-    {
-      "punctuated_word": "e",
-      "start": 19.96,
-      "end": 20.22
-    },
-    {
-      "punctuated_word": "até",
-      "start": 20.22,
-      "end": 20.42
-    },
-    {
-      "punctuated_word": "mesmo",
-      "start": 20.42,
-      "end": 20.9
-    },
-    {
-      "punctuated_word": "o",
-      "start": 20.9,
-      "end": 21.36
-    },
-    {
-      "punctuated_word": "mistério.",
-      "start": 21.36,
-      "end": 21.9
-    },
-    {
-      "punctuated_word": "Além",
-      "start": 22.4,
-      "end": 22.56
-    },
-    {
-      "punctuated_word": "disso,",
-      "start": 22.56,
-      "end": 22.92
-    },
-    {
-      "punctuated_word": "a",
-      "start": 23.26,
-      "end": 23.4
-    },
-    {
-      "punctuated_word": "forma",
-      "start": 23.4,
-      "end": 23.68
-    },
-    {
-      "punctuated_word": "como",
-      "start": 23.68,
-      "end": 23.92
-    },
-    {
-      "punctuated_word": "fomos",
-      "start": 23.92,
-      "end": 24.22
-    },
-    {
-      "punctuated_word": "criados",
-      "start": 24.22,
-      "end": 24.8
-    },
-    {
-      "punctuated_word": "e",
-      "start": 24.8,
-      "end": 25.06
-    },
-    {
-      "punctuated_word": "nossas",
-      "start": 25.06,
-      "end": 25.4
-    },
-    {
-      "punctuated_word": "experiências",
-      "start": 25.4,
-      "end": 26.08
-    },
-    {
-      "punctuated_word": "passadas",
-      "start": 26.08,
-      "end": 26.78
-    },
-    {
-      "punctuated_word": "desempenham",
-      "start": 26.78,
-      "end": 27.8
-    },
-    {
-      "punctuated_word": "um",
-      "start": 27.8,
-      "end": 28.06
-    },
-    {
-      "punctuated_word": "papel",
-      "start": 28.06,
-      "end": 28.32
-    },
-    {
-      "punctuated_word": "crucial",
-      "start": 28.32,
-      "end": 28.96
-    },
-    {
-      "punctuated_word": "em",
-      "start": 28.96,
-      "end": 29.28
-    },
-    {
-      "punctuated_word": "nossas",
-      "start": 29.28,
-      "end": 29.58
-    },
-    {
-      "punctuated_word": "preferências",
-      "start": 29.58,
-      "end": 30.3
-    },
-    {
-      "punctuated_word": "amorosas.",
-      "start": 30.3,
-      "end": 30.96
-    },
-    {
-      "punctuated_word": "Então,",
-      "start": 31.58,
-      "end": 31.88
+      "punctuated_word": "importância",
+      "start": 9.991,
+      "end": 10.611
     },
     {
       "punctuated_word": "da",
-      "start": 32.22,
-      "end": 32.34
+      "start": 10.611,
+      "end": 10.811
     },
     {
-      "punctuated_word": "próxima",
-      "start": 32.34,
-      "end": 32.64
+      "punctuated_word": "dedicação",
+      "start": 10.811,
+      "end": 11.431
     },
     {
-      "punctuated_word": "vez",
-      "start": 32.64,
-      "end": 32.98
+      "punctuated_word": "e",
+      "start": 11.431,
+      "end": 11.731
     },
     {
-      "punctuated_word": "que",
-      "start": 32.98,
-      "end": 33.14
+      "punctuated_word": "trabalho",
+      "start": 11.731,
+      "end": 12.131
     },
     {
-      "punctuated_word": "sentir",
-      "start": 33.14,
-      "end": 33.6
+      "punctuated_word": "duro.",
+      "start": 12.131,
+      "end": 12.571
     },
     {
-      "punctuated_word": "aquelas",
-      "start": 33.6,
-      "end": 33.98
+      "punctuated_word": "Enquanto",
+      "start": 13.151,
+      "end": 13.571
     },
     {
-      "punctuated_word": "borboletas",
-      "start": 33.98,
-      "end": 34.68
+      "punctuated_word": "dois",
+      "start": 13.571,
+      "end": 13.951
     },
     {
-      "punctuated_word": "no",
-      "start": 34.68,
-      "end": 34.88
+      "punctuated_word": "dos",
+      "start": 13.951,
+      "end": 14.191
     },
     {
-      "punctuated_word": "estômago,",
-      "start": 34.88,
-      "end": 35.44
+      "punctuated_word": "porquinhos",
+      "start": 14.191,
+      "end": 14.671
     },
     {
-      "punctuated_word": "lembre-se,",
-      "start": 35.82,
-      "end": 36.28
+      "punctuated_word": "constroem",
+      "start": 14.671,
+      "end": 15.331
+    },
+    {
+      "punctuated_word": "suas",
+      "start": 15.331,
+      "end": 15.651
+    },
+    {
+      "punctuated_word": "casas",
+      "start": 15.651,
+      "end": 16.111
+    },
+    {
+      "punctuated_word": "rapidamente",
+      "start": 16.111,
+      "end": 16.971
+    },
+    {
+      "punctuated_word": "e",
+      "start": 16.971,
+      "end": 17.431
+    },
+    {
+      "punctuated_word": "com",
+      "start": 17.431,
+      "end": 17.591
+    },
+    {
+      "punctuated_word": "materiais",
+      "start": 17.591,
+      "end": 18.171
+    },
+    {
+      "punctuated_word": "frágeis,",
+      "start": 18.171,
+      "end": 18.851
+    },
+    {
+      "punctuated_word": "o",
+      "start": 19.151,
+      "end": 19.351
+    },
+    {
+      "punctuated_word": "terceiro",
+      "start": 19.351,
+      "end": 19.831
+    },
+    {
+      "punctuated_word": "porquinho",
+      "start": 19.831,
+      "end": 20.331
+    },
+    {
+      "punctuated_word": "escolhe",
+      "start": 20.331,
+      "end": 20.951
+    },
+    {
+      "punctuated_word": "construir",
+      "start": 20.951,
+      "end": 21.411
+    },
+    {
+      "punctuated_word": "com",
+      "start": 21.411,
+      "end": 21.691
+    },
+    {
+      "punctuated_word": "tijolos,",
+      "start": 21.691,
+      "end": 22.371
+    },
+    {
+      "punctuated_word": "demonstrando",
+      "start": 22.731,
+      "end": 23.291
+    },
+    {
+      "punctuated_word": "prudência",
+      "start": 23.291,
+      "end": 23.991
+    },
+    {
+      "punctuated_word": "e",
+      "start": 23.991,
+      "end": 24.371
+    },
+    {
+      "punctuated_word": "esforço.",
+      "start": 24.371,
+      "end": 25.031
+    },
+    {
+      "punctuated_word": "No",
+      "start": 25.531,
+      "end": 25.671
+    },
+    {
+      "punctuated_word": "final,",
+      "start": 25.671,
+      "end": 26.111
+    },
+    {
+      "punctuated_word": "A",
+      "start": 26.423,
+      "end": 26.663
+    },
+    {
+      "punctuated_word": "casa",
+      "start": 26.663,
+      "end": 26.923
+    },
+    {
+      "punctuated_word": "de",
+      "start": 26.923,
+      "end": 27.143
+    },
+    {
+      "punctuated_word": "tijolos",
+      "start": 27.143,
+      "end": 27.743
     },
     {
       "punctuated_word": "é",
-      "start": 36.56,
-      "end": 36.72
+      "start": 27.743,
+      "end": 27.963
     },
     {
-      "punctuated_word": "tudo",
-      "start": 36.72,
-      "end": 36.94
+      "punctuated_word": "a",
+      "start": 27.963,
+      "end": 28.123
     },
     {
-      "punctuated_word": "psicologia.",
-      "start": 36.94,
-      "end": 37.72
+      "punctuated_word": "única",
+      "start": 28.123,
+      "end": 28.443
+    },
+    {
+      "punctuated_word": "que",
+      "start": 28.443,
+      "end": 28.663
+    },
+    {
+      "punctuated_word": "resiste",
+      "start": 28.663,
+      "end": 29.303
+    },
+    {
+      "punctuated_word": "ao",
+      "start": 29.303,
+      "end": 29.483
+    },
+    {
+      "punctuated_word": "sopro",
+      "start": 29.483,
+      "end": 29.843
+    },
+    {
+      "punctuated_word": "do",
+      "start": 29.843,
+      "end": 30.023
+    },
+    {
+      "punctuated_word": "lobo",
+      "start": 30.023,
+      "end": 30.303
+    },
+    {
+      "punctuated_word": "mau,",
+      "start": 30.303,
+      "end": 30.663
+    },
+    {
+      "punctuated_word": "provando",
+      "start": 31.123,
+      "end": 31.503
+    },
+    {
+      "punctuated_word": "que",
+      "start": 31.503,
+      "end": 31.663
+    },
+    {
+      "punctuated_word": "a",
+      "start": 31.663,
+      "end": 31.803
+    },
+    {
+      "punctuated_word": "paciência",
+      "start": 31.803,
+      "end": 32.483
+    },
+    {
+      "punctuated_word": "e",
+      "start": 32.483,
+      "end": 32.723
+    },
+    {
+      "punctuated_word": "o",
+      "start": 32.723,
+      "end": 32.823
+    },
+    {
+      "punctuated_word": "trabalho",
+      "start": 32.823,
+      "end": 33.183
+    },
+    {
+      "punctuated_word": "duro",
+      "start": 33.183,
+      "end": 33.603
+    },
+    {
+      "punctuated_word": "realmente",
+      "start": 33.603,
+      "end": 34.143
+    },
+    {
+      "punctuated_word": "compensam.",
+      "start": 34.143,
+      "end": 34.923
+    },
+    {
+      "punctuated_word": "Uma",
+      "start": 35.363,
+      "end": 35.543
+    },
+    {
+      "punctuated_word": "lição",
+      "start": 35.543,
+      "end": 35.863
+    },
+    {
+      "punctuated_word": "valiosa,",
+      "start": 35.863,
+      "end": 36.503
+    },
+    {
+      "punctuated_word": "não",
+      "start": 36.623,
+      "end": 36.703
+    },
+    {
+      "punctuated_word": "acha?",
+      "start": 36.703,
+      "end": 37.003
     }
   ]
 }

@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import multer from 'multer';
 import path from 'path';
 import { createAssets } from './get-assets';
-import { getVideoScript, generateProImagePrompts } from './utils';
+import { getVideoScript, generateProImagePrompts, generateProVideoPrompts } from './utils';
 import 'dotenv/config';
 
 const app = express();
@@ -77,7 +77,10 @@ app.post('/api/generate', async (req, res) => {
             console.log(`Using reference image: ${referenceImageUrl}`);
         }
 
-        await createAssets(script, voice, imagePrompts, referenceImageUrl);
+        const isVideoMode = req.body.useVideo !== undefined ? req.body.useVideo : true;
+        console.log(`Generating assets. useVideo request param: ${req.body.useVideo}, computed isVideoMode: ${isVideoMode}`);
+
+        await createAssets(script, voice, imagePrompts, referenceImageUrl, isVideoMode);
 
         res.json({ success: true, message: 'Assets generated successfully' });
     } catch (error: any) {
@@ -98,9 +101,15 @@ app.get('/api/voices', async (req, res) => {
 
 app.post('/api/generate-prompts', async (req, res) => {
     try {
-        const { script, topic } = req.body;
-        console.log(`Received pro prompt generation request for topic: ${topic}`);
-        const prompts = await generateProImagePrompts(script, topic);
+        const { script, topic, useVideo } = req.body;
+        console.log(`Received pro prompt generation request for topic: ${topic}, useVideo: ${useVideo}`);
+
+        let prompts;
+        if (useVideo) {
+            prompts = await generateProVideoPrompts(script, topic);
+        } else {
+            prompts = await generateProImagePrompts(script, topic);
+        }
         res.json({ success: true, prompts });
     } catch (error: any) {
         console.error('Prompt generation failed:', error);
