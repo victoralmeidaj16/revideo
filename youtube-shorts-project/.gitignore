@@ -1,6 +1,41 @@
-node_modules
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables
 .env
-dist
-output
-*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+output/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# MacOS
 .DS_Store
+
+# Generated Assets (Keep n8n-workflow though)
+public/*-audio.wav
+public/*-image-*.png
+public/*-metadata.json
+
+# Local shortcuts (optional, but good to ignore if personal)
+Start Project.app/
+start-project.command
+fix_icon.sh
+launcher.sh
+launcher_backup.sh
+set_icon.py
+
+# Editor
+.vscode/

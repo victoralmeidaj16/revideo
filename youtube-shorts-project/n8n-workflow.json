@@ -1,0 +1,742 @@
+{
+    "name": "Youtube Shorts Generator (Full Pipeline)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "generate-shorts",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                460,
+                300
+            ],
+            "id": "webhook-trigger"
+        },
+        {
+            "parameters": {
+                "model": "gpt-4-turbo-preview",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "={{ 'Create a script for a youtube short. The script should be around 60 to 80 words long and be an interesting text about the provided topic, and it should start with a catchy headline, something like \"Did you know that?\" or \"This will blow your mind\". Remember that this is for a voiceover that should be read, so things like hashtags should not be included. Now write the script for the following topic: \"' + $json.body.topic + '\". IMPORTANT: WRITE THE SCRIPT IN PORTUGUESE (BRAZIL). Now return the script and nothing else, also no meta-information - ONLY THE VOICEOVER.' }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "OpenAI - Generate Script",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1,
+            "position": [
+                680,
+                300
+            ],
+            "id": "openai-script",
+            "credentials": {
+                "openAiApi": {
+                    "id": "OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ 'https://api.elevenlabs.io/v1/text-to-speech/' + ($('Webhook').item.json.body.voiceId || 'EXAVITQu4vr4xnSDxMaL') }}",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "headerAuth",
+                "sendBody": true,
+                "contentType": "json",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "value": "={{ $('OpenAI - Generate Script').item.json.content }}"
+                        },
+                        {
+                            "name": "model_id",
+                            "value": "eleven_multilingual_v2"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "responseFormat": "file"
+                        }
+                    }
+                }
+            },
+            "name": "ElevenLabs - Generate Audio",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                900,
+                500
+            ],
+            "id": "elevenlabs-audio",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "ELEVENLABS_CREDENTIAL_ID",
+                    "name": "ElevenLabs API Key"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "fileName": "/Users/victoralmeidaj16/Downloads/revideo/youtube-shorts-project/public/n8n-audio.wav"
+            },
+            "name": "Write Audio File",
+            "type": "n8n-nodes-base.writeBinaryFile",
+            "typeVersion": 1,
+            "position": [
+                1120,
+                500
+            ],
+            "id": "write-audio"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.assemblyai.com/v2/upload",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "headerAuth",
+                "sendBody": true,
+                "contentType": "binaryData",
+                "binaryPropertyName": "data",
+                "options": {}
+            },
+            "name": "AssemblyAI - Upload",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                1340,
+                500
+            ],
+            "id": "assemblyai-upload",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "ASSEMBLYAI_CREDENTIAL_ID",
+                    "name": "AssemblyAI API Key"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.assemblyai.com/v2/transcript",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "headerAuth",
+                "sendBody": true,
+                "contentType": "json",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "audio_url",
+                            "value": "={{ $json.upload_url }}"
+                        },
+                        {
+                            "name": "language_code",
+                            "value": "pt"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "AssemblyAI - Transcribe",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                1560,
+                500
+            ],
+            "id": "assemblyai-transcribe",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "ASSEMBLYAI_CREDENTIAL_ID",
+                    "name": "AssemblyAI API Key"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "amount": 5,
+                "unit": "seconds"
+            },
+            "name": "Wait Transcription",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1,
+            "position": [
+                1780,
+                500
+            ],
+            "id": "wait-transcription"
+        },
+        {
+            "parameters": {
+                "url": "={{ 'https://api.assemblyai.com/v2/transcript/' + $json.id }}",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "headerAuth",
+                "options": {}
+            },
+            "name": "AssemblyAI - Get Result",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                2000,
+                500
+            ],
+            "id": "assemblyai-get",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "ASSEMBLYAI_CREDENTIAL_ID",
+                    "name": "AssemblyAI API Key"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.status }}",
+                            "value2": "completed"
+                        }
+                    ]
+                }
+            },
+            "name": "Check Transcription Status",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                2220,
+                500
+            ],
+            "id": "check-transcription"
+        },
+        {
+            "parameters": {},
+            "name": "Transcription Loop Back",
+            "type": "n8n-nodes-base.noOp",
+            "typeVersion": 1,
+            "position": [
+                2440,
+                600
+            ],
+            "id": "transcription-loop-back"
+        },
+        {
+            "parameters": {
+                "model": "gpt-4-turbo-preview",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "={{ '\n    You are an expert AI Art Director specializing in hyper-realistic, high-end commercial photography.\n    \n    Your task is to create 5 distinct, sequential image prompts to accompany a video script about \"' + $('Webhook').item.json.body.topic + '\".\n    \n    The script is: \"' + $('OpenAI - Generate Script').item.json.content + '\".\n    \n    Break the script into 5 chronological scenes. For EACH scene, write a prompt following this EXACT style structure, but adapting the subject to the scene:\n\n    \"A hyper-realistic vertical lifestyle photo (Ratio 4:5, 1080×1350) shot with directional soft light in a [describe environment]. Captured on a high-end mirrorless camera with a 50 mm lens at f/2.0. The camera is positioned in [describe angle], creating a subtle sense of protagonists and confidence. The subject is [describe subject and action detailed].\"\n\n    Return ONLY a valid JSON array of strings. Do not include markdown code block notation.\n    ' }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "OpenAI - Generate Prompts",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1,
+            "position": [
+                900,
+                300
+            ],
+            "id": "openai-prompts",
+            "credentials": {
+                "openAiApi": {
+                    "id": "OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Parse generated prompts\nconst content = $input.first().json.content;\nlet prompts;\ntry {\n  const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  prompts = JSON.parse(cleanContent);\n} catch (e) {\n  prompts = [];\n}\n\nreturn prompts.map((prompt, index) => ({ json: { prompt, index } }));"
+            },
+            "name": "Parse Prompts",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1120,
+                300
+            ],
+            "id": "parse-prompts"
+        },
+        {
+            "parameters": {
+                "batchSize": 1,
+                "options": {}
+            },
+            "name": "SplitInBatches",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 3,
+            "position": [
+                1340,
+                300
+            ],
+            "id": "split-in-batches"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.replicate.com/v1/predictions",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "headerAuth",
+                "sendBody": true,
+                "contentType": "json",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "version",
+                            "value": "cf7d431991436f19d1c8dad83fe463c729c816d7a21056c5105e75c84a0aa7e9"
+                        },
+                        {
+                            "name": "input",
+                            "value": "={{ {\n  \"prompt\": $json.prompt,\n  \"negative_prompt\": \"nude, naked, nsfw, text, watermark, bad anatomy, bad hands, blurry, low quality\",\n  \"width\": 1024,\n  \"height\": 1792,\n  \"num_outputs\": 1,\n  \"image\": $('Webhook').item.json.body.referenceImageUrl || undefined,\n  \"image_prompt_strength\": $('Webhook').item.json.body.referenceImageUrl ? 0.35 : undefined\n} }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Replicate - Start Generation",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                1560,
+                300
+            ],
+            "id": "replicate-start",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "REPLICATE_CREDENTIAL_ID",
+                    "name": "Replicate API Token"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "amount": 5,
+                "unit": "seconds"
+            },
+            "name": "Wait Image",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1,
+            "position": [
+                1780,
+                300
+            ],
+            "id": "wait-image"
+        },
+        {
+            "parameters": {
+                "url": "={{ $json.urls.get }}",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "headerAuth",
+                "options": {}
+            },
+            "name": "Replicate - Get Result",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                2000,
+                300
+            ],
+            "id": "replicate-get",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "REPLICATE_CREDENTIAL_ID",
+                    "name": "Replicate API Token"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.status }}",
+                            "value2": "succeeded"
+                        }
+                    ]
+                }
+            },
+            "name": "Check Image Status",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                2220,
+                300
+            ],
+            "id": "check-image-status"
+        },
+        {
+            "parameters": {
+                "url": "={{ $json.output[0] }}",
+                "options": {
+                    "response": {
+                        "response": {
+                            "responseFormat": "file"
+                        }
+                    }
+                }
+            },
+            "name": "Download Image",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                2440,
+                300
+            ],
+            "id": "download-image"
+        },
+        {
+            "parameters": {
+                "fileName": "={{ '/Users/victoralmeidaj16/Downloads/revideo/youtube-shorts-project/public/n8n-image-' + $('SplitInBatches').item.json.index + '.png' }}"
+            },
+            "name": "Write Image File",
+            "type": "n8n-nodes-base.writeBinaryFile",
+            "typeVersion": 1,
+            "position": [
+                2660,
+                300
+            ],
+            "id": "write-image"
+        },
+        {
+            "parameters": {},
+            "name": "Image Loop Back",
+            "type": "n8n-nodes-base.noOp",
+            "typeVersion": 1,
+            "position": [
+                2660,
+                100
+            ],
+            "id": "image-loop-back"
+        },
+        {
+            "parameters": {
+                "operation": "toJson",
+                "mode": "each"
+            },
+            "name": "Aggregate",
+            "type": "n8n-nodes-base.itemLists",
+            "typeVersion": 1,
+            "position": [
+                2900,
+                300
+            ],
+            "id": "aggregate-images"
+        },
+        {
+            "parameters": {
+                "mode": "runOnceForEachItem",
+                "jsCode": "const words = $('AssemblyAI - Get Result').item.json.words.map(w => ({\n  punctuated_word: w.text,\n  start: w.start / 1000,\n  end: w.end / 1000\n}));\n\nconst images = $('Aggregate').item.json.map(i => `/n8n-image-${i.json.index}.png`);\n// Sort images by index just in case\n// Actually aggregate preserves order usually, but let's assume index is reliable\n// Ideally we should have kept the original order. \n// The SplitInBatches index is available.\n\n// We need to match images to the correct order.\n// Let's just generate the paths based on 0-4 indices since we know we loop 5 times.\nconst imagePaths = Array.from({length: 5}, (_, i) => `/n8n-image-${i}.png`);\n\nconst metadata = {\n  audioUrl: \"n8n-audio.wav\",\n  images: imagePaths,\n  words: words\n};\n\nreturn { json: metadata };"
+            },
+            "name": "Format Metadata",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                3120,
+                400
+            ],
+            "id": "format-metadata"
+        },
+        {
+            "parameters": {
+                "fileContent": "={{ JSON.stringify($json, null, 2) }}",
+                "fileName": "/Users/victoralmeidaj16/Downloads/revideo/youtube-shorts-project/src/metadata.json"
+            },
+            "name": "Write Metadata File",
+            "type": "n8n-nodes-base.writeBinaryFile",
+            "typeVersion": 1,
+            "position": [
+                3340,
+                400
+            ],
+            "id": "write-metadata"
+        },
+        {
+            "parameters": {
+                "command": "npm run render"
+            },
+            "name": "Render Video",
+            "type": "n8n-nodes-base.executeCommand",
+            "typeVersion": 1,
+            "position": [
+                3560,
+                400
+            ],
+            "id": "render-video",
+            "retryOnFail": true,
+            "waitBetweenRetries": 1000
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "OpenAI - Generate Script",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI - Generate Script": {
+            "main": [
+                [
+                    {
+                        "node": "OpenAI - Generate Prompts",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "ElevenLabs - Generate Audio",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "ElevenLabs - Generate Audio": {
+            "main": [
+                [
+                    {
+                        "node": "Write Audio File",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Write Audio File": {
+            "main": [
+                [
+                    {
+                        "node": "AssemblyAI - Upload",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AssemblyAI - Upload": {
+            "main": [
+                [
+                    {
+                        "node": "AssemblyAI - Transcribe",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AssemblyAI - Transcribe": {
+            "main": [
+                [
+                    {
+                        "node": "Wait Transcription",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait Transcription": {
+            "main": [
+                [
+                    {
+                        "node": "AssemblyAI - Get Result",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AssemblyAI - Get Result": {
+            "main": [
+                [
+                    {
+                        "node": "Check Transcription Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Transcription Status": {
+            "main": [
+                [
+                    {
+                        "node": "Format Metadata",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Wait Transcription",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI - Generate Prompts": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Prompts",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Prompts": {
+            "main": [
+                [
+                    {
+                        "node": "SplitInBatches",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "SplitInBatches": {
+            "main": [
+                [
+                    {
+                        "node": "Replicate - Start Generation",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Aggregate",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Replicate - Start Generation": {
+            "main": [
+                [
+                    {
+                        "node": "Wait Image",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait Image": {
+            "main": [
+                [
+                    {
+                        "node": "Replicate - Get Result",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Replicate - Get Result": {
+            "main": [
+                [
+                    {
+                        "node": "Check Image Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Image Status": {
+            "main": [
+                [
+                    {
+                        "node": "Download Image",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Wait Image",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Download Image": {
+            "main": [
+                [
+                    {
+                        "node": "Write Image File",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Write Image File": {
+            "main": [
+                [
+                    {
+                        "node": "SplitInBatches",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Aggregate": {
+            "main": [
+                [
+                    {
+                        "node": "Format Metadata",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Metadata": {
+            "main": [
+                [
+                    {
+                        "node": "Write Metadata File",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Write Metadata File": {
+            "main": [
+                [
+                    {
+                        "node": "Render Video",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
