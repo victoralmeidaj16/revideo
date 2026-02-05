@@ -341,6 +341,30 @@ export const DEFAULT_KLING_CONFIG: KlingConfig = {
 	mode: 'std'
 };
 
+function stripDataUrlPrefix(value: string): string {
+	// Accept either raw base64 or a full data URL (data:image/...;base64,XXXX)
+	const base64Index = value.indexOf('base64,');
+	if (base64Index !== -1) {
+		return value.slice(base64Index + 'base64,'.length);
+	}
+	return value;
+}
+
+function sanitizeBase64(value: string): string {
+	// Kling expects raw base64 (no data: prefix) and no whitespace/newlines.
+	return stripDataUrlPrefix(value).replace(/\s+/g, '');
+}
+
+function formatAxiosError(error: any, context: string): Error {
+	if (!axios.isAxiosError(error)) return error instanceof Error ? error : new Error(String(error));
+	const status = error.response?.status;
+	const data = error.response?.data as any;
+	const details =
+		data?.message ? `${data.message}${data?.code ? ` (code ${data.code})` : ''}` : error.message;
+	const requestId = data?.request_id ? ` request_id=${data.request_id}` : '';
+	return new Error(`[${context}] HTTP ${status ?? 'unknown'}: ${details}.${requestId}`.trim());
+}
+
 
 /**
  * Generate a JWT token for Kling API authentication
@@ -379,32 +403,38 @@ async function klingSubmitTaskInternal(
 	}
 
 	// Convert images to base64
-	const startImageBase64 = await fs.promises.readFile(startImagePath, { encoding: 'base64' });
-	const endImageBase64 = await fs.promises.readFile(endImagePath, { encoding: 'base64' });
+	const startImageBase64 = sanitizeBase64(await fs.promises.readFile(startImagePath, { encoding: 'base64' }));
+	const endImageBase64 = sanitizeBase64(await fs.promises.readFile(endImagePath, { encoding: 'base64' }));
 
 	// Prepare request payload
 	const payload = {
 		model_name: config.model,
-		image: `data:image/png;base64,${startImageBase64}`,
-		image_tail: `data:image/png;base64,${endImageBase64}`,
+		// Kling expects raw base64, not a data URL.
+		image: startImageBase64,
+		image_tail: endImageBase64,
 		prompt: videoPrompt,
-		duration: "5",
+		duration: 5,
 		aspect_ratio: "9:16",
 		cfg_scale: 0.5,
 		mode: config.mode
 	};
 
 	console.log(`[Kling] Submitting video generation task...`);
-	const createResponse = await axios.post(
-		'https://api.klingai.com/v1/videos/image2video',
-		payload,
-		{
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${generateKlingToken(accessKey, secretKey)}`
+	let createResponse;
+	try {
+		createResponse = await axios.post(
+			'https://api.klingai.com/v1/videos/image2video',
+			payload,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${generateKlingToken(accessKey, secretKey)}`
+				}
 			}
-		}
-	);
+		);
+	} catch (error) {
+		throw formatAxiosError(error, 'Kling submit');
+	}
 
 	const taskId = createResponse.data.data?.task_id;
 	if (!taskId) {
@@ -433,14 +463,19 @@ async function klingPollTaskInternal(taskId: string, savePath: string): Promise<
 		await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
 		attempts++;
 
-		const statusResponse = await axios.get(
-			`https://api.klingai.com/v1/videos/image2video/${taskId}`,
-			{
-				headers: {
-					'Authorization': `Bearer ${generateKlingToken(accessKey, secretKey)}`
+		let statusResponse;
+		try {
+			statusResponse = await axios.get(
+				`https://api.klingai.com/v1/videos/image2video/${taskId}`,
+				{
+					headers: {
+						'Authorization': `Bearer ${generateKlingToken(accessKey, secretKey)}`
+					}
 				}
-			}
-		);
+			);
+		} catch (error) {
+			throw formatAxiosError(error, `Kling poll ${taskId}`);
+		}
 
 		const status = statusResponse.data.data?.task_status;
 		console.log(`[Kling] Task ${taskId} status: ${status} (${attempts}/${maxAttempts})`);
@@ -566,16 +601,16 @@ async function klingGenerateInternal(
 	}
 
 	// Convert images to base64
-	const startImageBase64 = await fs.promises.readFile(startImagePath, { encoding: 'base64' });
-	const endImageBase64 = await fs.promises.readFile(endImagePath, { encoding: 'base64' });
+	const startImageBase64 = sanitizeBase64(await fs.promises.readFile(startImagePath, { encoding: 'base64' }));
+	const endImageBase64 = sanitizeBase64(await fs.promises.readFile(endImagePath, { encoding: 'base64' }));
 
 	// Prepare request payload for Kling API
 	const payload = {
 		model_name: "kling-v1",  // or latest available model
-		image: `data:image/png;base64,${startImageBase64}`,
-		image_tail: `data:image/png;base64,${endImageBase64}`,
+		image: startImageBase64,
+		image_tail: endImageBase64,
 		prompt: videoPrompt,
-		duration: "5",  // 5 seconds for faster generation, can be "10"
+		duration: 5,  // 5 seconds for faster generation, can be 10
 		aspect_ratio: "9:16",  // YouTube Shorts format
 		cfg_scale: 0.5,
 		mode: "std"  // standard mode
