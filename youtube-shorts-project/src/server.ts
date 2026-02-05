@@ -108,13 +108,17 @@ app.post('/api/preview-images', async (req, res) => {
 // Generate videos from already-generated images
 app.post('/api/generate-videos', async (req, res) => {
     try {
-        const { script, voice, imagePrompts, referenceImageUrl } = req.body;
-        console.log('[Video Generation] Generating videos from previewed images...');
+        const { script, voice, imagePrompts, referenceImageUrl, useVideo, klingConfig } = req.body;
+        const isVideoMode = useVideo !== undefined ? useVideo : true;
+        console.log(`[Video Generation] Generating final video. useVideo: ${useVideo}, isVideoMode: ${isVideoMode}`);
+        if (isVideoMode && klingConfig) {
+            console.log(`[Video Generation] Kling config: model=${klingConfig.model}, mode=${klingConfig.mode}`);
+        }
 
-        // Generate with video mode = true
-        await createAssets(script, voice || 'Sarah', imagePrompts, referenceImageUrl, true);
+        // Generate with the appropriate mode
+        await createAssets(script, voice || 'Sarah', imagePrompts, referenceImageUrl, isVideoMode, klingConfig);
 
-        res.json({ success: true, message: 'Videos generated successfully' });
+        res.json({ success: true, message: isVideoMode ? 'Videos generated successfully' : 'Static images ready for rendering' });
     } catch (error: any) {
         console.error('Video generation failed:', error);
         res.status(500).json({ success: false, error: error.message });

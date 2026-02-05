@@ -1,8 +1,12 @@
+
 import 'dotenv/config';
 import OpenAI from 'openai/index.mjs';
-import axios from "axios";
-import * as fs from "fs";
-import { AssemblyAI } from "assemblyai";
+import axios from 'axios';
+import * as fs from 'fs';
+import ffmpeg from 'fluent-ffmpeg';
+import { AssemblyAI } from 'assemblyai';
+import Replicate from 'replicate';
+import jwt from 'jsonwebtoken';
 
 const client = new AssemblyAI({
 	apiKey: process.env["ASSEMBLYAI_API_KEY"] || "",
@@ -133,7 +137,7 @@ export async function dalleGenerate(prompt: string, savePath: string) {
 	}
 }
 
-import Replicate from "replicate";
+
 
 export async function replicateGenerate(prompt: string, savePath: string, referenceImageUrl?: string) {
 	const replicate = new Replicate({
@@ -322,12 +326,50 @@ export async function retryWithBackoff<T>(
 // ============================================
 
 /**
+ * Configuration options for Kling AI video generation
+ */
+export interface KlingConfig {
+	model: 'kling-v1' | 'kling-v1-5';  // v1 = standard, v1-5 = improved quality
+	mode: 'std' | 'pro';               // std = standard speed, pro = higher quality but slower
+}
+
+/**
+ * Default Kling configuration
+ */
+export const DEFAULT_KLING_CONFIG: KlingConfig = {
+	model: 'kling-v1',
+	mode: 'std'
+};
+
+
+/**
+ * Generate a JWT token for Kling API authentication
+ */
+function generateKlingToken(accessKey: string, secretKey: string): string {
+	const payload = {
+		iss: accessKey,
+		exp: Math.floor(Date.now() / 1000) + 1800, // Token valid for 30 minutes
+		nbf: Math.floor(Date.now() / 1000) - 5     // Valid from 5 seconds ago
+	};
+
+	return jwt.sign(payload, secretKey, {
+		algorithm: 'HS256',
+		header: {
+			alg: 'HS256',
+			typ: 'JWT'
+		}
+	});
+}
+
+
+/**
  * Submit a Kling video generation task (without polling)
  */
 async function klingSubmitTaskInternal(
 	videoPrompt: string,
 	startImagePath: string,
-	endImagePath: string
+	endImagePath: string,
+	config: KlingConfig = DEFAULT_KLING_CONFIG
 ): Promise<string> {
 	const accessKey = process.env.KLING_ACCESS_KEY;
 	const secretKey = process.env.KLING_SECRET_KEY;
@@ -342,14 +384,14 @@ async function klingSubmitTaskInternal(
 
 	// Prepare request payload
 	const payload = {
-		model_name: "kling-v1",
+		model_name: config.model,
 		image: `data:image/png;base64,${startImageBase64}`,
 		image_tail: `data:image/png;base64,${endImageBase64}`,
 		prompt: videoPrompt,
 		duration: "5",
 		aspect_ratio: "9:16",
 		cfg_scale: 0.5,
-		mode: "std"
+		mode: config.mode
 	};
 
 	console.log(`[Kling] Submitting video generation task...`);
@@ -359,7 +401,7 @@ async function klingSubmitTaskInternal(
 		{
 			headers: {
 				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${accessKey}:${secretKey}`
+				'Authorization': `Bearer ${generateKlingToken(accessKey, secretKey)}`
 			}
 		}
 	);
@@ -395,7 +437,7 @@ async function klingPollTaskInternal(taskId: string, savePath: string): Promise<
 			`https://api.klingai.com/v1/videos/image2video/${taskId}`,
 			{
 				headers: {
-					'Authorization': `Bearer ${accessKey}:${secretKey}`
+					'Authorization': `Bearer ${generateKlingToken(accessKey, secretKey)}`
 				}
 			}
 		);
@@ -431,10 +473,11 @@ async function klingPollTaskInternal(taskId: string, savePath: string): Promise<
 export async function klingSubmitTask(
 	videoPrompt: string,
 	startImagePath: string,
-	endImagePath: string
+	endImagePath: string,
+	config: KlingConfig = DEFAULT_KLING_CONFIG
 ): Promise<string> {
 	return retryWithBackoff(
-		() => klingSubmitTaskInternal(videoPrompt, startImagePath, endImagePath),
+		() => klingSubmitTaskInternal(videoPrompt, startImagePath, endImagePath, config),
 		3,
 		2000,
 		'Kling Task Submission'
@@ -462,15 +505,16 @@ export async function klingBatchGenerate(
 		startPath: string;
 		endPath: string;
 		savePath: string;
-	}>
+	}>,
+	config: KlingConfig = DEFAULT_KLING_CONFIG
 ): Promise<void> {
-	console.log(`[Kling Batch] Starting batch generation of ${tasks.length} videos...`);
+	console.log(`[Kling Batch] Starting batch generation of ${tasks.length} videos (model: ${config.model}, mode: ${config.mode})...`);
 	const batchStartTime = Date.now();
 
 	// Step 1: Submit all tasks in parallel
 	console.log(`[Kling Batch] Submitting ${tasks.length} tasks...`);
 	const taskIds = await Promise.all(
-		tasks.map(t => klingSubmitTask(t.videoPrompt, t.startPath, t.endPath))
+		tasks.map(t => klingSubmitTask(t.videoPrompt, t.startPath, t.endPath, config))
 	);
 	console.log(`[Kling Batch] All ${tasks.length} tasks submitted successfully`);
 

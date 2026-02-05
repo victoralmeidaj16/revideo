@@ -779,6 +779,28 @@
                     Se marcado, gera vídeos de fundo (mais demorado). Se desmarcado, gera imagens estáticas (mais
                     rápido).
                 </p>
+                <!-- Kling Model/Mode Selection -->
+                <div id="klingOptionsContainer"
+                    style="margin-top: var(--space-md); margin-left: 32px; display: flex; gap: var(--space-lg); flex-wrap: wrap;">
+                    <div style="display: flex; flex-direction: column; gap: var(--space-xs);">
+                        <label for="klingModelSelect" style="color: var(--text-secondary); font-size: 0.875rem;">Modelo
+                            Kling</label>
+                        <select id="klingModelSelect"
+                            style="padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-primary); background: var(--bg-elevated); color: var(--text-primary); font-size: 0.9rem;">
+                            <option value="kling-v1">Kling v1 (Padrão)</option>
+                            <option value="kling-v1-5">Kling v1.5 (Melhor qualidade)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-xs);">
+                        <label for="klingModeSelect" style="color: var(--text-secondary); font-size: 0.875rem;">Modo de
+                            Geração</label>
+                        <select id="klingModeSelect"
+                            style="padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-primary); background: var(--bg-elevated); color: var(--text-primary); font-size: 0.9rem;">
+                            <option value="std">Standard (Mais rápido)</option>
+                            <option value="pro">Pro (Maior qualidade)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- Scenes Card -->
@@ -892,6 +914,17 @@
             scenesContainer.appendChild(div);
         }
 
+        // Toggle Kling options visibility based on video checkbox
+        const useVideoCheckbox = document.getElementById('useVideoCheckbox');
+        const klingOptionsContainer = document.getElementById('klingOptionsContainer');
+
+        function toggleKlingOptions() {
+            klingOptionsContainer.style.display = useVideoCheckbox.checked ? 'flex' : 'none';
+        }
+
+        useVideoCheckbox.addEventListener('change', toggleKlingOptions);
+        toggleKlingOptions(); // Set initial state
+
         async function generateProPrompts() {
             const topic = document.getElementById('topic').value;
             const script = document.getElementById('scriptText').value;
@@ -975,21 +1008,76 @@
 
             const btn = document.getElementById('previewBtn');
             const originalText = btn.innerHTML;
+            const isVideoMode = useVideoCheckbox.checked;
 
             btn.disabled = true;
+            
+            // Collect prompts
+            const prompts = [];
+            for (let i = 0; i < 5; i++) {
+                const val = document.getElementById(`prompt-${i}`).value;
+                if (val.trim()) prompts.push(val);
+            }
+
+            // Get reference image URL if uploaded
+            const referenceImageUrl = window.uploadedReferenceImageUrl || null;
+
+            // If static mode (no video), skip preview and go directly to final generation
+            if (!isVideoMode) {
+                btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeo estático...';
+                
+                try {
+                    const voice = document.getElementById('voice').value;
+                    const klingConfig = {
+                        model: document.getElementById('klingModelSelect').value,
+                        mode: document.getElementById('klingModeSelect').value
+                    };
+
+                    // Show status container
+                    document.getElementById('statusContainer').style.display = 'block';
+                    const statusTitle = document.getElementById('statusTitle');
+                    const statusText = document.getElementById('statusText');
+                    const statusIcon = document.getElementById('statusIcon');
+                    const previewLink = document.getElementById('previewLink');
+
+                    statusTitle.innerText = "Gerando Vídeo Estático...";
+                    statusText.innerText = "Preparando vídeo com imagens estáticas. Isso leva cerca de 1 minuto.";
+                    statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
+                    statusIcon.style.animation = "spin 2s infinite linear";
+
+                    const response = await fetch('http://localhost:3001/api/generate-videos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo: false, klingConfig })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        statusTitle.innerText = "Vídeo Estático Pronto! 🎉";
+                        statusText.innerText = "Suas imagens estáticas foram geradas com sucesso. Clique abaixo para visualizar.";
+                        statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+                        statusIcon.style.animation = "none";
+                        previewLink.style.display = 'block';
+                    } else {
+                        statusTitle.innerText = "Erro";
+                        statusText.innerText = "Falha ao gerar: " + data.error;
+                        statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+                        statusIcon.style.animation = "none";
+                    }
+                } catch (e) {
+                    alert("Erro de conexão: " + e.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+                return;
+            }
+
+            // Video mode - show preview first
             btn.innerHTML = '<span class="loading-spinner"></span> Gerando imagens...';
 
             try {
-                // Collect prompts
-                const prompts = [];
-                for (let i = 0; i < 5; i++) {
-                    const val = document.getElementById(`prompt-${i}`).value;
-                    if (val.trim()) prompts.push(val);
-                }
-
-                // Get reference image URL if uploaded
-                const referenceImageUrl = window.uploadedReferenceImageUrl || null;
-
                 const response = await fetch('http://localhost:3001/api/preview-images', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1072,13 +1160,18 @@
             const originalText = btn.innerHTML;
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeos...';
+            const isVideoMode = useVideoCheckbox.checked;
+            btn.innerHTML = isVideoMode
+                ? '<span class="loading-spinner"></span> Gerando vídeos animados...'
+                : '<span class="loading-spinner"></span> Gerando vídeo estático...';
 
             // Show status container
             document.getElementById('statusContainer').style.display = 'block';
 
-            statusTitle.innerText = "Gerando Vídeos...";
-            statusText.innerText = "Criando 5 vídeos em paralelo com Kling AI. Isso pode levar 2-4 minutos.";
+            statusTitle.innerText = isVideoMode ? "Gerando Vídeos Animados..." : "Gerando Vídeo Estático...";
+            statusText.innerText = isVideoMode
+                ? "Criando 5 vídeos em paralelo com Kling AI. Isso pode levar 2-4 minutos."
+                : "Preparando vídeo com imagens estáticas. Isso leva cerca de 1 minuto.";
             // Feather Icon: loader
             statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
             statusIcon.style.animation = "spin 2s infinite linear";
@@ -1095,17 +1188,26 @@
                 // Get reference image URL if uploaded
                 const referenceImageUrl = window.uploadedReferenceImageUrl || null;
 
+                // Get video mode and Kling configuration
+                const useVideo = useVideoCheckbox.checked;
+                const klingConfig = {
+                    model: document.getElementById('klingModelSelect').value,
+                    mode: document.getElementById('klingModeSelect').value
+                };
+
                 const response = await fetch('http://localhost:3001/api/generate-videos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl })
+                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo, klingConfig })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    statusTitle.innerText = "Vídeos Prontos! 🎉";
-                    statusText.innerText = "Seus 5 vídeos foram gerados com sucesso. Clique no botão abaixo para visualizar e baixar.";
+                    statusTitle.innerText = useVideo ? "Vídeos Prontos! 🎉" : "Imagens Prontas! 🎉";
+                    statusText.innerText = useVideo
+                        ? `Seus 5 vídeos foram gerados com ${klingConfig.model} no modo ${klingConfig.mode}. Clique abaixo para visualizar.`
+                        : "Suas imagens estáticas foram geradas com sucesso. Clique abaixo para visualizar.";
                     // Feather Icon: check-circle
                     statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
                     statusIcon.style.animation = "none";
