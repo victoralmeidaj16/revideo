@@ -280,3 +280,447 @@ export async function generateProImagePrompts(script: string, topic: string) {
 		return [];
 	}
 }
+
+// ============================================
+// Retry Logic with Exponential Backoff
+// ============================================
+
+/**
+ * Retry a function with exponential backoff
+ */
+export async function retryWithBackoff<T>(
+	fn: () => Promise<T>,
+	maxRetries: number = 3,
+	baseDelay: number = 1000,
+	operationName: string = 'operation'
+): Promise<T> {
+	for (let attempt = 0; attempt < maxRetries; attempt++) {
+		try {
+			console.log(`[${operationName}] Attempt ${attempt + 1}/${maxRetries}`);
+			return await fn();
+		} catch (error: any) {
+			const isLastAttempt = attempt === maxRetries - 1;
+
+			if (isLastAttempt) {
+				console.error(`[${operationName}] Failed after ${maxRetries} attempts`);
+				throw error;
+			}
+
+			const delay = baseDelay * Math.pow(2, attempt);
+			console.warn(
+				`[${operationName}] Attempt ${attempt + 1} failed: ${error.message}. ` +
+				`Retrying in ${delay}ms...`
+			);
+			await new Promise(resolve => setTimeout(resolve, delay));
+		}
+	}
+	throw new Error('Unreachable');
+}
+
+// ============================================
+// Kling AI Video Generation Functions
+// ============================================
+
+/**
+ * Submit a Kling video generation task (without polling)
+ */
+async function klingSubmitTaskInternal(
+	videoPrompt: string,
+	startImagePath: string,
+	endImagePath: string
+): Promise<string> {
+	const accessKey = process.env.KLING_ACCESS_KEY;
+	const secretKey = process.env.KLING_SECRET_KEY;
+
+	if (!accessKey || !secretKey) {
+		throw new Error('Kling API credentials not found in environment variables');
+	}
+
+	// Convert images to base64
+	const startImageBase64 = await fs.promises.readFile(startImagePath, { encoding: 'base64' });
+	const endImageBase64 = await fs.promises.readFile(endImagePath, { encoding: 'base64' });
+
+	// Prepare request payload
+	const payload = {
+		model_name: "kling-v1",
+		image: `data:image/png;base64,${startImageBase64}`,
+		image_tail: `data:image/png;base64,${endImageBase64}`,
+		prompt: videoPrompt,
+		duration: "5",
+		aspect_ratio: "9:16",
+		cfg_scale: 0.5,
+		mode: "std"
+	};
+
+	console.log(`[Kling] Submitting video generation task...`);
+	const createResponse = await axios.post(
+		'https://api.klingai.com/v1/videos/image2video',
+		payload,
+		{
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${accessKey}:${secretKey}`
+			}
+		}
+	);
+
+	const taskId = createResponse.data.data?.task_id;
+	if (!taskId) {
+		throw new Error('No task_id returned from Kling API');
+	}
+
+	console.log(`[Kling] Task submitted: ${taskId}`);
+	return taskId;
+}
+
+/**
+ * Poll a Kling task until completion and download the video
+ */
+async function klingPollTaskInternal(taskId: string, savePath: string): Promise<void> {
+	const accessKey = process.env.KLING_ACCESS_KEY;
+	const secretKey = process.env.KLING_SECRET_KEY;
+
+	let completed = false;
+	let videoUrl = '';
+	const maxAttempts = 60; // 5 minutes max
+	let attempts = 0;
+
+	console.log(`[Kling] Starting polling for task ${taskId}...`);
+
+	while (!completed && attempts < maxAttempts) {
+		await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+		attempts++;
+
+		const statusResponse = await axios.get(
+			`https://api.klingai.com/v1/videos/image2video/${taskId}`,
+			{
+				headers: {
+					'Authorization': `Bearer ${accessKey}:${secretKey}`
+				}
+			}
+		);
+
+		const status = statusResponse.data.data?.task_status;
+		console.log(`[Kling] Task ${taskId} status: ${status} (${attempts}/${maxAttempts})`);
+
+		if (status === 'succeed') {
+			completed = true;
+			const works = statusResponse.data.data?.task_result?.works;
+			if (works && works.length > 0) {
+				videoUrl = works[0].resource.resource;
+			}
+		} else if (status === 'failed') {
+			throw new Error(`Kling video generation failed: ${statusResponse.data.data?.task_status_msg || 'Unknown error'}`);
+		}
+	}
+
+	if (!videoUrl) {
+		throw new Error('Video generation timed out or no video URL returned');
+	}
+
+	console.log(`[Kling] Video ready, downloading: ${videoUrl}`);
+	const videoResponse = await axios.get(videoUrl, { responseType: 'arraybuffer' });
+	const buffer = Buffer.from(videoResponse.data, 'binary');
+	await fs.promises.writeFile(savePath, buffer);
+	console.log(`[Kling] Video saved to: ${savePath}`);
+}
+
+/**
+ * Submit a Kling task with retry logic
+ */
+export async function klingSubmitTask(
+	videoPrompt: string,
+	startImagePath: string,
+	endImagePath: string
+): Promise<string> {
+	return retryWithBackoff(
+		() => klingSubmitTaskInternal(videoPrompt, startImagePath, endImagePath),
+		3,
+		2000,
+		'Kling Task Submission'
+	);
+}
+
+/**
+ * Poll a Kling task with retry logic
+ */
+export async function klingPollTask(taskId: string, savePath: string): Promise<void> {
+	return retryWithBackoff(
+		() => klingPollTaskInternal(taskId, savePath),
+		2,
+		3000,
+		`Kling Task Polling (${taskId})`
+	);
+}
+
+/**
+ * Batch generate multiple Kling videos in parallel
+ */
+export async function klingBatchGenerate(
+	tasks: Array<{
+		videoPrompt: string;
+		startPath: string;
+		endPath: string;
+		savePath: string;
+	}>
+): Promise<void> {
+	console.log(`[Kling Batch] Starting batch generation of ${tasks.length} videos...`);
+	const batchStartTime = Date.now();
+
+	// Step 1: Submit all tasks in parallel
+	console.log(`[Kling Batch] Submitting ${tasks.length} tasks...`);
+	const taskIds = await Promise.all(
+		tasks.map(t => klingSubmitTask(t.videoPrompt, t.startPath, t.endPath))
+	);
+	console.log(`[Kling Batch] All ${tasks.length} tasks submitted successfully`);
+
+	// Step 2: Poll all tasks in parallel
+	console.log(`[Kling Batch] Polling ${tasks.length} tasks in parallel...`);
+	await Promise.all(
+		taskIds.map((id, i) => klingPollTask(id, tasks[i].savePath))
+	);
+
+	const batchDuration = Date.now() - batchStartTime;
+	console.log(`[Kling Batch] All ${tasks.length} videos completed in ${batchDuration}ms (${(batchDuration / 1000 / 60).toFixed(1)}min)`);
+}
+
+/**
+ * Generate a video using Kling AI's image-to-video with start and end frames
+ * (Original single-video function, now uses batch internally for consistency)
+ */
+export async function klingGenerate(
+	videoPrompt: string,
+	startImagePath: string,
+	endImagePath: string,
+	savePath: string
+): Promise<void> {
+	await klingBatchGenerate([{
+		videoPrompt,
+		startPath: startImagePath,
+		endPath: endImagePath,
+		savePath
+	}]);
+}
+
+// Internal implementation moved above
+async function klingGenerateInternal(
+	videoPrompt: string,
+	startImagePath: string,
+	endImagePath: string,
+	savePath: string
+): Promise<void> {
+	console.log(`Generating video with Kling AI...`);
+	console.log(`Start frame: ${startImagePath}`);
+	console.log(`End frame: ${endImagePath}`);
+	console.log(`Video prompt: ${videoPrompt}`);
+
+	const accessKey = process.env.KLING_ACCESS_KEY;
+	const secretKey = process.env.KLING_SECRET_KEY;
+
+	if (!accessKey || !secretKey) {
+		throw new Error('Kling API credentials not found in environment variables');
+	}
+
+	// Convert images to base64
+	const startImageBase64 = await fs.promises.readFile(startImagePath, { encoding: 'base64' });
+	const endImageBase64 = await fs.promises.readFile(endImagePath, { encoding: 'base64' });
+
+	// Prepare request payload for Kling API
+	const payload = {
+		model_name: "kling-v1",  // or latest available model
+		image: `data:image/png;base64,${startImageBase64}`,
+		image_tail: `data:image/png;base64,${endImageBase64}`,
+		prompt: videoPrompt,
+		duration: "5",  // 5 seconds for faster generation, can be "10"
+		aspect_ratio: "9:16",  // YouTube Shorts format
+		cfg_scale: 0.5,
+		mode: "std"  // standard mode
+	};
+
+	try {
+		// Step 1: Submit video generation task
+		const createResponse = await axios.post(
+			'https://api.klingai.com/v1/videos/image2video',
+			payload,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${accessKey}:${secretKey}`
+				}
+			}
+		);
+
+		const taskId = createResponse.data.data?.task_id;
+		if (!taskId) {
+			throw new Error('No task_id returned from Kling API');
+		}
+
+		console.log(`Kling video generation task created: ${taskId}`);
+
+		// Step 2: Poll for completion
+		let completed = false;
+		let videoUrl = '';
+		const maxAttempts = 60; // 5 minutes max (5s intervals)
+		let attempts = 0;
+
+		while (!completed && attempts < maxAttempts) {
+			await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+			attempts++;
+
+			const statusResponse = await axios.get(
+				`https://api.klingai.com/v1/videos/image2video/${taskId}`,
+				{
+					headers: {
+						'Authorization': `Bearer ${accessKey}:${secretKey}`
+					}
+				}
+			);
+
+			const status = statusResponse.data.data?.task_status;
+			console.log(`Kling task ${taskId} status: ${status} (attempt ${attempts}/${maxAttempts})`);
+
+			if (status === 'succeed') {
+				completed = true;
+				const works = statusResponse.data.data?.task_result?.works;
+				if (works && works.length > 0) {
+					videoUrl = works[0].resource.resource;
+				}
+			} else if (status === 'failed') {
+				throw new Error(`Kling video generation failed: ${statusResponse.data.data?.task_status_msg || 'Unknown error'}`);
+			}
+		}
+
+		if (!videoUrl) {
+			throw new Error('Video generation timed out or no video URL returned');
+		}
+
+		console.log(`Kling video ready: ${videoUrl}`);
+
+		// Step 3: Download the video
+		const videoResponse = await axios.get(videoUrl, { responseType: 'arraybuffer' });
+		const buffer = Buffer.from(videoResponse.data, 'binary');
+		await fs.promises.writeFile(savePath, buffer);
+
+		console.log(`Kling video saved to: ${savePath}`);
+	} catch (error: any) {
+		console.error('Kling API error:', error.response?.data || error.message);
+		throw error;
+	}
+}
+
+/**
+ * Generate an optimized video prompt describing camera movement and scene transition
+ */
+export async function generateVideoPrompt(
+	sceneDescription: string,
+	startImagePrompt: string,
+	endImagePrompt: string
+): Promise<string> {
+	const prompt = `
+    You are an expert AI video director specializing in image-to-video generation.
+    
+    Given a scene description and two image prompts (start and end frames), create a SHORT, CONCISE video prompt that describes the motion, camera movement, and transition.
+    
+    Scene context: "${sceneDescription}"
+    Start frame: "${startImagePrompt}"
+    End frame: "${endImagePrompt}"
+    
+    Create a video prompt following this structure:
+    - Describe the camera movement (slow zoom, pan, dolly, orbit, etc.)
+    - Mention the transition between the two states
+    - Include cinematic qualities (smooth, fluid, cinematic, 4k, high quality)
+    - Keep it under 200 characters for best results
+    
+    Example output: "Smooth cinematic zoom in, camera slowly pans left revealing the scene, fluid motion, 4k quality, professional cinematography"
+    
+    Return ONLY the video prompt text, nothing else.
+    `;
+
+	const chatCompletion = await openai.chat.completions.create({
+		messages: [{ role: 'user', content: prompt }],
+		model: 'gpt-4-turbo-preview',
+		temperature: 0.7
+	});
+
+	const result = chatCompletion.choices[0].message.content;
+	if (result) {
+		return result.trim();
+	} else {
+		// Fallback
+		return "Smooth cinematic motion, camera slowly moves revealing the scene, fluid transition, 4k quality";
+	}
+}
+
+/**
+ * Generate a varied end frame prompt from a start frame prompt
+ */
+export async function generateEndFramePrompt(startPrompt: string): Promise<string> {
+	const prompt = `
+    You are an AI art director creating a sequence of images for video generation.
+    
+    Given this START frame image prompt: "${startPrompt}"
+    
+    Create an END frame prompt that represents a logical visual progression or slight variation of the scene.
+    The end frame should:
+    - Show the same subject/scene but from a slightly different perspective or state
+    - Have a natural progression (e.g., if zoomed out, now closer; if left, now center; if beginning, now ending)
+    - Maintain visual consistency with the start frame
+    - Be suitable as the final frame of a 5-second video clip
+    
+    Return ONLY the end frame image prompt, nothing else. Keep the same style and quality descriptors as the start prompt.
+    `;
+
+	const chatCompletion = await openai.chat.completions.create({
+		messages: [{ role: 'user', content: prompt }],
+		model: 'gpt-4-turbo-preview',
+		temperature: 0.8
+	});
+
+	const result = chatCompletion.choices[0].message.content;
+	if (result) {
+		return result.trim();
+	} else {
+		// Fallback: slight variation
+		return startPrompt + ", closer perspective, slight zoom in";
+	}
+}
+
+/**
+ * Generate a progressive prompt that evolves from the previous one
+ * Used to create visual continuity across multiple scenes
+ */
+export async function generateProgressivePrompt(
+	previousPrompt: string,
+	index: number,
+	totalFrames: number
+): Promise<string> {
+	const progress = ((index / totalFrames) * 100).toFixed(0);
+
+	const prompt = `
+    You are an AI art director creating a progressive visual story across ${totalFrames} frames.
+    
+    PREVIOUS frame (${index - 1}/${totalFrames}): "${previousPrompt}"
+    
+    Create the NEXT frame (${index}/${totalFrames}, ${progress}% through the story) that:
+    - Naturally evolves from the previous scene
+    - Maintains visual continuity (same style, lighting, color palette)
+    - Shows progression in the narrative (closer zoom, different angle, next moment in time, etc.)
+    - Feels like a smooth transition when animated between frames
+    
+    Return ONLY the new image prompt, nothing else. Keep the same technical descriptors (resolution, camera, lens, etc.) as the previous prompt.
+    `;
+
+	const chatCompletion = await openai.chat.completions.create({
+		messages: [{ role: 'user', content: prompt }],
+		model: 'gpt-4-turbo-preview',
+		temperature: 0.7 // Slightly lower for consistency
+	});
+
+	const result = chatCompletion.choices[0].message.content;
+	if (result) {
+		return result.trim();
+	} else {
+		// Fallback: add progression marker
+		return previousPrompt + `, progressive step ${index}`;
+	}
+}

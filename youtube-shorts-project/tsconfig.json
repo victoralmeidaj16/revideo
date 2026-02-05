@@ -8,6 +8,7 @@
     "outDir": "dist",
     "module": "CommonJS",
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   }
 }

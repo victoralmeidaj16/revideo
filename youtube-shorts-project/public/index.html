@@ -771,7 +771,7 @@
                         <input type="checkbox" id="useVideoCheckbox" checked
                             style="width: 20px; height: 20px; accent-color: var(--accent-primary);">
                         <span style="color: var(--text-primary); font-size: 1rem;">Gerar Vídeos Animados
-                            (Minimax)</span>
+                            (Kling AI)</span>
                     </label>
                 </div>
                 <p
@@ -810,9 +810,36 @@
                 </div>
             </div>
 
-            <!-- Generate Button -->
-            <button onclick="generateVideo()" id="generateBtn" class="btn btn-primary">
-                🚀 Gerar Vídeo
+            <!-- Preview Gallery (Initially Hidden) -->
+            <div id="previewGallery" class="card" style="display:none; margin-top: var(--space-lg);">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                        </span>
+                        Preview das Imagens Geradas
+                    </div>
+                    <span class="card-badge">6 imagens progressivas</span>
+                </div>
+                <div id="previewGrid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); padding: var(--space-md);">
+                    <!-- Images will be inserted here via JS -->
+                </div>
+            </div>
+
+            <!-- Generate Buttons -->
+            <button onclick="generatePreview()" id="previewBtn" class="btn btn-secondary"
+                style="margin-top: var(--space-lg);">
+                🖼️ Gerar Preview de Imagens
+            </button>
+
+            <button onclick="generateVideos()" id="videoBtn" class="btn btn-primary"
+                style="display:none; margin-top: var(--space-md);">
+                🎬 Gerar Vídeos Animados (Kling AI)
             </button>
         </div>
 
@@ -938,7 +965,97 @@
             }
         }
 
-        async function generateVideo() {
+        async function generatePreview() {
+            const script = document.getElementById('scriptText').value;
+
+            if (!script) {
+                alert("Por favor, escreva ou gere um roteiro primeiro.");
+                return;
+            }
+
+            const btn = document.getElementById('previewBtn');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Gerando imagens...';
+
+            try {
+                // Collect prompts
+                const prompts = [];
+                for (let i = 0; i < 5; i++) {
+                    const val = document.getElementById(`prompt-${i}`).value;
+                    if (val.trim()) prompts.push(val);
+                }
+
+                // Get reference image URL if uploaded
+                const referenceImageUrl = window.uploadedReferenceImageUrl || null;
+
+                const response = await fetch('http://localhost:3001/api/preview-images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ script, imagePrompts: prompts, referenceImageUrl })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Load and show preview images
+                    await loadPreviewImages();
+
+                    // Show "Generate Videos" button
+                    document.getElementById('videoBtn').style.display = 'block';
+
+                    // Scroll to gallery
+                    document.getElementById('previewGallery').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    alert("Erro ao gerar preview: " + data.error);
+                }
+            } catch (e) {
+                alert("Erro de conexão: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+
+        async function loadPreviewImages() {
+            try {
+                // Read metadata to get image filenames (from /metadata.json which is served from public)
+                const response = await fetch('/metadata.json?t=' + Date.now());
+                const metadata = await response.json();
+
+                console.log('Metadata loaded:', metadata);
+
+                const previewGrid = document.getElementById('previewGrid');
+                previewGrid.innerHTML = '';
+
+                // metadata.images contains the base image names like "/jobId-base-image-0.png"
+                // For preview mode with images only, we show all 5 base images
+                for (let i = 0; i < Math.min(5, metadata.images.length); i++) {
+                    const imagePath = metadata.images[i];
+
+                    const pairDiv = document.createElement('div');
+                    pairDiv.style.cssText = 'border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; background: rgba(255, 255, 255, 0.02);';
+                    pairDiv.innerHTML = `
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem; font-weight: 600;">Cena ${i + 1}</div>
+                        <div style="display: flex; justify-content: center;">
+                            <img src="${imagePath}?t=${Date.now()}" style="max-width: 100%; border-radius: var(--radius-sm); aspect-ratio: 9/16; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: var(--text-muted);\\'>Imagem não encontrada</div>'">
+                        </div>
+                    `;
+                    previewGrid.appendChild(pairDiv);
+                }
+
+                // Show gallery
+                document.getElementById('previewGallery').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading preview images:', error);
+                alert('Erro ao carregar preview das imagens. Verifique o console.');
+            }
+        }
+
+
+        async function generateVideos() {
             const script = document.getElementById('scriptText').value;
             const voice = document.getElementById('voice').value;
 
@@ -947,7 +1064,7 @@
                 return;
             }
 
-            const btn = document.getElementById('generateBtn');
+            const btn = document.getElementById('videoBtn');
             const statusTitle = document.getElementById('statusTitle');
             const statusText = document.getElementById('statusText');
             const statusIcon = document.getElementById('statusIcon');
@@ -955,13 +1072,13 @@
             const originalText = btn.innerHTML;
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeo...';
+            btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeos...';
 
             // Show status container
             document.getElementById('statusContainer').style.display = 'block';
 
-            statusTitle.innerText = "Processando...";
-            statusText.innerText = "Gerando áudio, imagens e montando seu vídeo. Isso pode levar 1-2 minutos.";
+            statusTitle.innerText = "Gerando Vídeos...";
+            statusText.innerText = "Criando 5 vídeos em paralelo com Kling AI. Isso pode levar 2-4 minutos.";
             // Feather Icon: loader
             statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
             statusIcon.style.animation = "spin 2s infinite linear";
@@ -978,28 +1095,24 @@
                 // Get reference image URL if uploaded
                 const referenceImageUrl = window.uploadedReferenceImageUrl || null;
 
-                // Get Video Mode
-                const useVideo = document.getElementById('useVideoCheckbox').checked;
-                console.log("Generating video with useVideo:", useVideo);
-
-                const response = await fetch('http://localhost:3001/api/generate', {
+                const response = await fetch('http://localhost:3001/api/generate-videos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo })
+                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    statusTitle.innerText = "Vídeo Pronto! 🎉";
-                    statusText.innerText = "Seu vídeo foi gerado com sucesso. Clique no botão abaixo para visualizar e baixar.";
+                    statusTitle.innerText = "Vídeos Prontos! 🎉";
+                    statusText.innerText = "Seus 5 vídeos foram gerados com sucesso. Clique no botão abaixo para visualizar e baixar.";
                     // Feather Icon: check-circle
                     statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
                     statusIcon.style.animation = "none";
                     previewLink.style.display = 'block';
                 } else {
                     statusTitle.innerText = "Erro na Geração";
-                    statusText.innerText = data.error || "Ocorreu um erro ao gerar o vídeo.";
+                    statusText.innerText = data.error || "Ocorreu um erro ao gerar os vídeos.";
                     // Feather Icon: x-circle
                     statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
                     statusIcon.style.animation = "none";

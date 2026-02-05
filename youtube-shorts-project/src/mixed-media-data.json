@@ -1,0 +1,54 @@
+{
+  "startTime": "00:02:44",
+  "totalDuration": 31,
+  "segments": [
+    {
+      "type": "ORIGINAL_VIDEO",
+      "duration": 5,
+      "description": "The video starts with the speaker beginning the new segment, setting the context for the topic."
+    },
+    {
+      "type": "AI_IMAGE",
+      "duration": 4,
+      "prompt": "A scale balancing traditional psychology and modern cognitive behavioral therapy, symbolizing the choice and dilemma faced by practitioners.",
+      "description": "Visual metaphor for the discussion about choosing psychological approaches.",
+      "src": "/mixed-media-image-1.png"
+    },
+    {
+      "type": "ORIGINAL_VIDEO",
+      "duration": 6,
+      "description": "The speaker discusses the importance of selecting an approach based on its efficacy, making a personal point about the patient's well-being."
+    },
+    {
+      "type": "AI_IMAGE",
+      "duration": 5,
+      "prompt": "Patient in distress reaching out and being guided by a clear path, symbolizing TCC's structured approach.",
+      "description": "Imagery to highlight the supportive and structured nature of TCC.",
+      "src": "/mixed-media-image-3.png"
+    },
+    {
+      "type": "ORIGINAL_VIDEO",
+      "duration": 4,
+      "description": "The speaker emphasizes the necessity of moving beyond personal preference for professional efficacy."
+    },
+    {
+      "type": "AI_IMAGE",
+      "duration": 3,
+      "prompt": "A diverse group of people connected around a glowing central hub, representing a multifactorial approach to mental health.",
+      "description": "Shows TCC's perspective on mental health as affected by multiple factors.",
+      "src": "/mixed-media-image-5.png"
+    },
+    {
+      "type": "ORIGINAL_VIDEO",
+      "duration": 5,
+      "description": "The speaker makes a strong personal appeal about the consequences of choosing the right therapy approach."
+    },
+    {
+      "type": "AI_IMAGE",
+      "duration": 3,
+      "prompt": "An academic bridge, one end labeled 'Psicanálise' and the other 'TCC', bridging historical and modern practices.",
+      "description": "Illustrates the transition from psicanálise dominance to TCC in academic settings.",
+      "src": "/mixed-media-image-7.png"
+    }
+  ]
+}

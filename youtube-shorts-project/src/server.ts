@@ -89,6 +89,38 @@ app.post('/api/generate', async (req, res) => {
     }
 });
 
+// Preview images before generating videos
+app.post('/api/preview-images', async (req, res) => {
+    try {
+        const { script, imagePrompts, referenceImageUrl } = req.body;
+        console.log('[Preview] Generating image previews...');
+
+        // Generate only images (isVideoMode = false) to show preview
+        await createAssets(script, 'Sarah', imagePrompts, referenceImageUrl, false);
+
+        res.json({ success: true, message: 'Preview images generated successfully' });
+    } catch (error: any) {
+        console.error('Preview generation failed:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Generate videos from already-generated images
+app.post('/api/generate-videos', async (req, res) => {
+    try {
+        const { script, voice, imagePrompts, referenceImageUrl } = req.body;
+        console.log('[Video Generation] Generating videos from previewed images...');
+
+        // Generate with video mode = true
+        await createAssets(script, voice || 'Sarah', imagePrompts, referenceImageUrl, true);
+
+        res.json({ success: true, message: 'Videos generated successfully' });
+    } catch (error: any) {
+        console.error('Video generation failed:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.get('/api/voices', async (req, res) => {
     res.json({
         voices: [

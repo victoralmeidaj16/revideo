@@ -212,6 +212,9 @@ function* highlightCurrentWord(container: Reference<Layout>, currentBatch: Word[
   }
 }
 
+// import mixedMediaScene from './mixed-media-scene';
+import './global.css';
+
 export default makeProject({
   scenes: [scene],
   variables: metadata,
