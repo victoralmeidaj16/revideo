@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
-import { replicateGenerate } from './utils';
+import { geminiGenerate, extractAudioSegment, getWordTimestamps } from './utils';
 
 dotenv.config();
 
@@ -10,12 +10,21 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Hardcoded for now based on previous clip selection
-const START_TIME = "00:02:44";
-const DURATION_SEC = 31;
+// Hardcoded configuration for Testing/Demo purposes
+// In a real production environment, these would likely be dynamic inputs or point to a full video with audio.
+const START_TIME = "00:00:00";
+const DURATION_SEC = 10;
 const TRANSCRIPTION_PATH = '/Users/victoralmeidaj16/.gemini/antigravity/brain/7d5c77d0-5fb3-4163-986e-5acab9fd8fe1/transcription.md';
 
+// TEST FILES (Current setup using separate video and audio files because the test video is silent)
+const SOURCE_VIDEO_FILENAME = '5fd66ba2-d015-4194-a68f-6e427d580ac6-video-0.mp4';
+const SOURCE_AUDIO_FILENAME = '5fd66ba2-d015-4194-a68f-6e427d580ac6-audio.wav';
+const SOURCE_VIDEO_PATH = path.join(process.cwd(), 'public', SOURCE_VIDEO_FILENAME);
+const SOURCE_AUDIO_PATH = path.join(process.cwd(), 'public', SOURCE_AUDIO_FILENAME);
+
 const OUTPUT_JSON_PATH = path.join(process.cwd(), 'public', 'mixed-media-data.json');
+const SRC_JSON_PATH = path.join(process.cwd(), 'src', 'mixed-media-data.json');
+const EXTRACTED_AUDIO_PATH = path.join(process.cwd(), 'public', 'mixed-media-audio.wav');
 
 async function main() {
     console.log('Reading transcription...');
@@ -24,6 +33,41 @@ async function main() {
         process.exit(1);
     }
     const transcription = fs.readFileSync(TRANSCRIPTION_PATH, 'utf-8');
+
+    // 1. Audio Handling
+    // PRODUCTION MODE:
+    // If your SOURCE_VIDEO_PATH points to a video that CONTAINS audio, you should use extractAudioSegment:
+    // 
+    // console.log(`Extracting audio from ${START_TIME} for ${DURATION_SEC}s...`);
+    // await extractAudioSegment(SOURCE_VIDEO_PATH, START_TIME, DURATION_SEC, EXTRACTED_AUDIO_PATH);
+
+    // DEMO/TEST MODE (Simulated extraction):
+    // Since the test video ('video-0.mp4') is silent, we manually copy a separate audio file ('audio.wav') 
+    // to act as the "extracted" audio.
+    console.log(`Using existing audio for test: ${SOURCE_AUDIO_FILENAME}`);
+    try {
+        if (!fs.existsSync(SOURCE_AUDIO_PATH)) {
+            throw new Error(`Source audio not found at ${SOURCE_AUDIO_PATH}`);
+        }
+        // Copy to the expected output path
+        fs.copyFileSync(SOURCE_AUDIO_PATH, EXTRACTED_AUDIO_PATH);
+        console.log(`Audio ready at: ${EXTRACTED_AUDIO_PATH}`);
+    } catch (err) {
+        console.error("Failed to prepare audio.", err);
+        return;
+    }
+
+    // 2. Transcribe the extracted audio to get accurate word timestamps
+    console.log("Transcribing extracted audio for subtitles...");
+    let words: any[] = [];
+    try {
+        words = await getWordTimestamps(EXTRACTED_AUDIO_PATH);
+        console.log(`Transcription complete. Got ${words.length} words.`);
+    } catch (err) {
+        console.error("Failed to transcribe audio:", err);
+        // Continue without subtitles if transcription fails, or return?
+        // Let's continue but warn
+    }
 
     console.log('Generating Mixed Media Storyboard with OpenAI...');
 
@@ -35,7 +79,7 @@ async function main() {
     I have a video clip that runs from ${START_TIME} for ${DURATION_SEC} seconds.
     
     The transcription context around this time is:
-    ${transcription.substring(0, 15000)} 
+    ${transcription.substring(0, 5000)} 
     
     Your task is to create a "Mixed Media" sequence for this ${DURATION_SEC}-second clip.
     The sequence should alternate between showing the ORIGINAL_VIDEO (facecam) and AI_IMAGE (illustration/b-roll) to make it visually engaging.
@@ -90,8 +134,8 @@ async function main() {
 
                 console.log(`Generating image for segment ${i}: "${segment.prompt}"...`);
 
-                // Using seedream-4 as requested via replicateGenerate
-                await replicateGenerate(segment.prompt, imagePath);
+                // Using gemini-3-pro-image-preview (via Imagen 3 API) as requested
+                await geminiGenerate(segment.prompt, imagePath);
 
                 segment.src = publicPath;
             }
@@ -101,11 +145,15 @@ async function main() {
         const outputData = {
             startTime: START_TIME,
             totalDuration: DURATION_SEC,
+            sourceVideo: SOURCE_VIDEO_FILENAME,
+            extractedAudio: "/mixed-media-audio.wav", // Path for Revideo
+            words: words, // Add the specific word timestamps here
             segments: segments
         };
 
         fs.writeFileSync(OUTPUT_JSON_PATH, JSON.stringify(outputData, null, 2));
-        console.log(`Mixed media data saved to: ${OUTPUT_JSON_PATH}`);
+        fs.writeFileSync(SRC_JSON_PATH, JSON.stringify(outputData, null, 2)); // improved: write to src for dev server
+        console.log(`Mixed media data saved to: ${OUTPUT_JSON_PATH} and ${SRC_JSON_PATH}`);
 
     } catch (error) {
         console.error('Error:', error);

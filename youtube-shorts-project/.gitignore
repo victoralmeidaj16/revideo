@@ -27,7 +27,15 @@ logs/
 # Generated Assets (Keep n8n-workflow though)
 public/*-audio.wav
 public/*-image-*.png
+public/*-video-*.mp4
 public/*-metadata.json
+public/mixed-media-data.json
+src/mixed-media-data.json
+src/metadata.json
+public/metadata.json
+revideo.log
+server.log
+*_output.json
 
 # Local shortcuts (optional, but good to ignore if personal)
 Start Project.app/
@@ -39,3 +47,4 @@ set_icon.py
 
 # Editor
 .vscode/
+*.swp

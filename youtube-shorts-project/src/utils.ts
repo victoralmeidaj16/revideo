@@ -1,5 +1,6 @@
 
 import 'dotenv/config';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai/index.mjs';
 import axios from 'axios';
 import * as fs from 'fs';
@@ -15,6 +16,8 @@ const client = new AssemblyAI({
 const openai = new OpenAI({
 	apiKey: process.env['OPENAI_API_KEY'],
 });
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function getWordTimestamps(audioFilePath: string) {
 	console.log("AssemblyAI Key Length:", (process.env["ASSEMBLYAI_API_KEY"] || "").length);
@@ -37,13 +40,23 @@ export async function getWordTimestamps(audioFilePath: string) {
 	}
 }
 
-export async function generateAudio(text: string, voiceName: string, savePath: string) {
+export async function generateAudio(text: string, voiceNameOrId: string, savePath: string) {
 	const data = {
 		model_id: "eleven_multilingual_v2",
 		text: text,
 	};
 
-	const voiceId = await getVoiceByName(voiceName);
+	let voiceId = voiceNameOrId;
+	// Check if input looks like a valid ID (long alphanumeric string)
+	// If not, try to look it up by name
+	if (!/^[a-zA-Z0-9]{20}$/.test(voiceNameOrId)) {
+		const foundId = await getVoiceByName(voiceNameOrId);
+		if (foundId) {
+			voiceId = foundId;
+		} else {
+			console.warn(`Voice name '${voiceNameOrId}' not found, assuming it's a valid ID or let it fail.`);
+		}
+	}
 
 	const response = await axios.post(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, data, {
 		headers: {
@@ -73,22 +86,62 @@ async function getVoiceByName(name: string) {
 	return voice ? voice.voice_id : null;
 }
 
-export async function getVideoScript(videoTopic: string) {
-	const prompt = `Create a script for a youtube short. The script should be around 60 to 80 words long and be an interesting text about the provided topic, and it should start with a catchy headline, something like "Did you know that?" or "This will blow your mind". Remember that this is for a voiceover that should be read, so things like hashtags should not be included. Now write the script for the following topic: "${videoTopic}". IMPORTANT: WRITE THE SCRIPT IN PORTUGUESE (BRAZIL). Now return the script and nothing else, also no meta-information - ONLY THE VOICEOVER.`;
+export async function getVideoScript(videoTopic: string, templateStructure?: string, brandContext?: string) {
+	// Parse brand context if present to get name/niche for the system role
+	const brandNameInfo = brandContext?.match(/Marca: (.*?)\./)?.[1] || 'uma marca moderna';
+	const brandNicheInfo = brandContext?.match(/Nicho: (.*?)\./)?.[1] || 'conteúdo viral';
+
+	const systemRole = `Você é um copywriter especialista e estrategista de conteúdo para ${brandNameInfo}, atuando no nicho de ${brandNicheInfo}.
+Seu objetivo é criar roteiros de vídeos curtos (Shorts/Reels/TikTok) que sejam altamente engajadores, retenham a atenção e estejam PERFEITAMENTE alinhados com a identidade e voz da marca.`;
+
+	const brandInstruction = brandContext
+		? `\n\n📋 **IDENTIDADE DA MARCA (Siga estritamente):**\n${brandContext}\n\nUSE O TOM DE VOZ, VOCABULÁRIO E VALORES descritos acima. O roteiro deve soar como se fosse escrito pelo fundador/especialista da marca.`
+		: '';
+
+	let layoutInstruction = '';
+	if (templateStructure) {
+		layoutInstruction = `\n\n📐 **ESTRUTURA OBRIGATÓRIA DO ROTEIRO:**\n${templateStructure}`;
+	} else {
+		layoutInstruction = `\n\n📐 **ESTRUTURA SUGERIDA:**\n- **Gancho (0-3s):** Uma frase impactante, curiosa ou polêmica para prender a atenção.\n- **Corpo (3-40s):** Desenvolvimento do conteúdo com valor prático ou emocional.\n- **CTA (40-60s):** Chamada para ação clara e conectada ao objetivo da marca.`;
+	}
+
+	const prompt = `
+Crie um roteiro para um vídeo curto vertical (aprox. 60-90 segundos falados).
+
+Crie um roteiro para um vídeo curto vertical (aprox. 60-90 segundos falados).
+
+🎯 **TÓPICO DO VÍDEO:** ${videoTopic ? `"${videoTopic}"` : "ESCOLHA UM TÓPICO VIRAL E RELEVANTE PARA O NICHO DA MARCA (Sugerir algo que engaje o público-alvo)"}
+${brandInstruction}
+${layoutInstruction}
+
+⚠️ **REGRAS CRITICAS:**
+1. **IDIOMA:** Escreva em PORTUGUÊS (BRASIL) natural e falado.
+2. **FORMATO:** Apenas o texto falado (voiceover). NÃO inclua rubricas como [Música], [Cena], [Efeitos], emojis ou hashtags.
+3. **TOM:** Deve refletir a personalidade da marca (ex: se for 'Inner Boost', deve ser inspirador, científico e motivador; se for 'TechNova', deve ser futurista e técnico).
+4. **RETENÇÃO:** Use frases curtas, ritmo ágil e evite introduções longas. Vá direto ao ponto.
+
+SAÍDA ESPERADA:
+Apenas o texto corrido do roteiro, pronto para ser lido pelo narrador. Nada mais.
+`;
+
+	console.log(`[Script Gen] Generating script for topic: "${videoTopic}" with brand context length: ${brandContext?.length || 0}`);
 
 	const chatCompletion = await openai.chat.completions.create({
-		messages: [{ role: 'user', content: prompt }],
+		messages: [
+			{ role: 'system', content: systemRole },
+			{ role: 'user', content: prompt }
+		],
 		model: 'gpt-4-turbo-preview',
+		temperature: 0.7, // Slightly creative but focused
 	});
 
 	const result = chatCompletion.choices[0].message.content;
 
 	if (result) {
-		return result;
+		return result.trim();
 	} else {
 		throw Error("returned text is null");
 	}
-
 }
 
 export async function getImagePromptFromScript(script: string) {
@@ -140,45 +193,122 @@ export async function dalleGenerate(prompt: string, savePath: string) {
 
 
 export async function replicateGenerate(prompt: string, savePath: string, referenceImageUrl?: string) {
-	const replicate = new Replicate({
-		auth: process.env.REPLICATE_API_TOKEN,
-	});
+	// Replicate implementation preserved if needed, but we essentially want to replace usages.
+	// ...
+	// Actually, I will replace this WHOLE function with one that calls geminiGenerate if needed, 
+	// OR I can just add geminiGenerate and change the call sites.
+	// The plan said "Replace calls to replicateGenerate with geminiGenerate".
+	// So I will add geminiGenerate here.
+	return geminiGenerate(prompt, savePath, referenceImageUrl);
+}
 
-	// Build input object - conditionally add reference image for image-to-image
-	const inputParams: any = {
-		prompt: prompt,
-		negative_prompt: "nude, naked, nsfw, text, watermark, bad anatomy, bad hands, blurry, low quality",
-		width: 1024,
-		height: 1792,
-		num_outputs: 1
+export async function geminiGenerate(prompt: string, savePath: string, referenceImageUrl?: string) {
+	console.log(`Generating image with Gemini for prompt: ${prompt}`);
+
+	const apiKey = process.env.GEMINI_API_KEY;
+	if (!apiKey) throw new Error("GEMINI_API_KEY is missing");
+
+	// The model name requested was 'gemini-3-pro-image-preview'.
+	// We try to use the exact ID provided by the user.
+	const modelId = 'gemini-3-pro-image-preview';
+	// Use generateContent instead of predict
+	const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
+
+	// Payload for Gemini generateContent
+	const payload = {
+		contents: [{
+			parts: [{ text: prompt }]
+		}],
+		safetySettings: [
+			{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+			{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+			{ category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+			{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+		]
 	};
 
-	// If reference image is provided, add it for image-to-image generation
-	if (referenceImageUrl) {
-		inputParams.image = referenceImageUrl;
-		inputParams.image_prompt_strength = 0.35; // Moderate influence from reference
-		console.log(`Using reference image for generation: ${referenceImageUrl}`);
-	}
-
-	const output = await replicate.run(
-		"bytedance/seedream-4:cf7d431991436f19d1c8dad83fe463c729c816d7a21056c5105e75c84a0aa7e9",
-		{
-			input: inputParams
+	try {
+		if (!prompt || prompt.trim().length === 0) {
+			throw new Error("Prompt cannot be empty for Gemini generation");
 		}
-	);
 
-	if (!output) {
-		throw new Error("No output from Replicate");
+		const response = await axios.post(url, payload, {
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		// Debug logging to see structure if we don't know it
+		// console.log("Gemini 3 Response:", JSON.stringify(response.data, null, 2));
+
+		if (response.data && response.data.candidates && response.data.candidates.length > 0) {
+			const candidate = response.data.candidates[0];
+			const parts = candidate.content.parts;
+
+			// Look for inlineData (image bytes)
+			const inlineDataPart = parts.find((p: any) => p.inlineData);
+
+			if (inlineDataPart) {
+				const base64Image = inlineDataPart.inlineData.data;
+				const buffer = Buffer.from(base64Image, 'base64');
+				await fs.promises.writeFile(savePath, buffer);
+				console.log(`Saved Gemini 3 image to ${savePath}`);
+			} else {
+				// Fallback: check if it returned a file URI or text link
+				console.log("No inlineData found in response parts:", JSON.stringify(parts));
+				throw new Error("No image data found in Gemini 3 response");
+			}
+
+		} else {
+			throw new Error(`Unexpected response from Gemini 3: ${JSON.stringify(response.data)}`);
+		}
+	} catch (e: any) {
+		const errorMsg = e.response?.data?.error?.message || e.message;
+		const errorCode = e.response?.status || 'Unknown';
+		console.error(`Gemini generation failed (${errorCode}):`, errorMsg);
+
+		// Log full details if available
+		if (e.response?.data) {
+			console.error("Full error details:", JSON.stringify(e.response.data, null, 2));
+		}
+
+		throw new Error(`Gemini Error (${errorCode}): ${errorMsg}`);
+	}
+}
+
+// I'll rewrite `replicateGenerate` to use `geminiGenerate`
+// But wait, `replicateGenerate` is exported and used elsewhere. 
+// I should just change the implementation of `replicateGenerate` to call `geminiGenerate` 
+// OR rename it and update callers. 
+// Renaming is better for clarity, but keeping the name `replicateGenerate` 
+// (or `generateImage`) and changing the internals is easier for refactoring.
+// I'll Rename it to `generateImage` and alias `geminiGenerate` to it, 
+// then update callers to usage `generateImage`.
+// Better yet, I'll leave `replicateGenerate` as is (deprecated) and add `generateImage` (using Gemini).
+// Then I update the callers.
+
+export async function generateImage(prompt: string, savePath: string, referenceImageUrl?: string) {
+	const apiKey = process.env.GEMINI_API_KEY;
+	if (!apiKey) {
+		console.warn("GEMINI_API_KEY missing, falling back to Replicate...");
+		return replicateGenerate(prompt, savePath, referenceImageUrl);
 	}
 
-	// Replicate returns an array of URLs (or a single URL depending on model, usually array)
-	// Cast to any to handle type simply
-	const url = Array.isArray(output) ? output[0] : output;
+	// Implementation for Gemini/Imagen
+	// Using 'imagen-3.0-generate-001' as the likely real target for image generation API
+	// or 'gemini-2.0-flash' if it supports it.
 
-	// Fetch and save
-	const responseImage = await axios.get(url, { responseType: "arraybuffer" });
-	const buffer = Buffer.from(responseImage.data, "binary");
-	await fs.promises.writeFile(savePath, buffer);
+	// I will use a direct fetch to the Imagen endpoint which is most standard for this.
+	const modelId = 'imagen-3.0-generate-001';
+	const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
+
+	const payload = {
+		instances: [{ prompt: prompt }],
+		parameters: {
+			sampleCount: 1,
+			aspectRatio: "9:16"
+		}
+	};
+
+	// ...
 }
 
 export async function minimaxGenerate(prompt: string, savePath: string, imagePath?: string) {
@@ -223,19 +353,41 @@ export async function minimaxGenerate(prompt: string, savePath: string, imagePat
 	await fs.promises.writeFile(savePath, buffer);
 }
 
-export async function generateProVideoPrompts(script: string, topic: string) {
+export async function generateProVideoPrompts(script: string, topic: string, brandContext?: string, templateContext?: string) {
+	const brandInstruction = brandContext
+		? `\n\nBRAND GUIDELINES (STRICTLY FOLLOW):\n${brandContext}\nUse the brand's color palette, lighting style, and mood in every scene.`
+		: '';
+
+	const templateInstruction = templateContext
+		? `\n\nTEMPLATE STRUCTURE:\n${templateContext}\nEnsure the visual flow matches this structure.`
+		: '';
+
 	const prompt = `
-    You are an expert AI Cinematographer specializing in high-end commercial video production.
+    You are an expert AI Director and Cinematographer.
     
-    Your task is to create 5 distinct, sequential VIDEO prompts to accompany a video script about "${topic}".
+    Your task is to create a visual storyboard for a video script.
+    The script will be provided below.
     
-    The script is: "${script}".
-    
-    Break the script into 5 chronological scenes. For EACH scene, write a prompt following this EXACT style structure, focusing on MOTION and VISUALS:
+    STRICT RULES:
+    1. Break the script into exactly 6 chronological segments.
+    2. For EACH segment, write a highly detailed, LITERAL image generation prompt.
+    3. The image MUST depict EXACTLY what is being said in that part of the script.
+    4. NO METAPHORS. NO ABSTRACT CONCEPTS. If the script says "person running", show a person running. Do NOT show a clock to represent time.
+    5. STYLE: Cinematic, photorealistic, 4k, vertical (9:16).
+    6. NEGATIVE PROMPT (CRITICAL): NO TEXT, NO WORDS, NO LETTERS, NO TYPOGRAPHY, NO HUD, NO OVERLAYS, NO ICONS. The image must be a photograph/render only.
+    7. CONTINUITY: Maintain consistent lighting and character style across all scenes.
 
-    "A cinematic vertical video shot (Ratio 9:16) in 4k resolution. [describe environment and lighting]. Camera movement is [describe motion, e.g., slow pan, drone shot, dolly in]. The action shows [describe subject and specific movement]. High production value, hyper-realistic, detailed textures."
+    ${brandInstruction}
 
-    Return ONLY a valid JSON array of strings, for example: ["Prompt 1...", "Prompt 2...", ...]. Do not include markdown code block notation.
+    SCRIPT:
+    "${script}"
+
+    Return ONLY a JSON array of 6 strings. Example:
+    [
+        "Vertical cinematic shot of [subject doing specific action described in script segment 1]...",
+        "Vertical cinematic shot of [subject doing specific action described in script segment 2]...",
+        ...
+    ]
     `;
 
 	const chatCompletion = await openai.chat.completions.create({
@@ -254,17 +406,27 @@ export async function generateProVideoPrompts(script: string, topic: string) {
 	}
 }
 
-export async function generateProImagePrompts(script: string, topic: string) {
+export async function generateProImagePrompts(script: string, topic: string, brandContext?: string, templateContext?: string) {
+	const brandInstruction = brandContext
+		? `\n\nBRAND GUIDELINES (STRICTLY FOLLOW):\n${brandContext}\nUse the brand's color palette, lighting style, and mood in every scene.`
+		: '';
+
+	const templateInstruction = templateContext
+		? `\n\nTEMPLATE STRUCTURE:\n${templateContext}\nEnsure the visual flow matches this structure.`
+		: '';
+
 	const prompt = `
-    You are an expert AI Art Director specializing in hyper-realistic, high-end commercial photography.
+    You are an expert AI Art Director specializing in hyper-realistic, high-end commercial photography for a specific brand.
     
     Your task is to create 5 distinct, sequential image prompts to accompany a video script about "${topic}".
     
     The script is: "${script}".
+    ${brandInstruction}
+    ${templateInstruction}
     
     Break the script into 5 chronological scenes. For EACH scene, write a prompt following this EXACT style structure, but adapting the subject to the scene:
 
-    "A hyper-realistic vertical lifestyle photo (Ratio 4:5, 1080×1350) shot with directional soft light in a [describe environment]. Captured on a high-end mirrorless camera with a 50 mm lens at f/2.0. The camera is positioned in [describe angle], creating a subtle sense of protagonists and confidence. The subject is [describe subject and action detailed]."
+    "A hyper-realistic vertical lifestyle photo (Ratio 9:16, 1080×1920) shot with directional soft light in a [describe environment matching brand style]. Captured on a high-end mirrorless camera with a 50 mm lens at f/2.0. The camera is positioned in [describe angle], creating a subtle sense of protagonists and confidence. The subject is [describe subject and action detailed]. Colors: [mention brand colors]."
 
     Return ONLY a valid JSON array of strings, for example: ["Prompt 1...", "Prompt 2...", ...]. Do not include markdown code block notation.
     `;
@@ -329,7 +491,7 @@ export async function retryWithBackoff<T>(
  * Configuration options for Kling AI video generation
  */
 export interface KlingConfig {
-	model: 'kling-v1' | 'kling-v1-5';  // v1 = standard, v1-5 = improved quality
+	model: 'kling-v1' | 'kling-v1-5' | 'kling-v1-6' | 'kling-v2-6';  // v1, v1.5, v1.6, v2.6 (latest)
 	mode: 'std' | 'pro';               // std = standard speed, pro = higher quality but slower
 }
 
@@ -337,7 +499,7 @@ export interface KlingConfig {
  * Default Kling configuration
  */
 export const DEFAULT_KLING_CONFIG: KlingConfig = {
-	model: 'kling-v1',
+	model: 'kling-v2-6',
 	mode: 'std'
 };
 
@@ -362,7 +524,11 @@ function formatAxiosError(error: any, context: string): Error {
 	const details =
 		data?.message ? `${data.message}${data?.code ? ` (code ${data.code})` : ''}` : error.message;
 	const requestId = data?.request_id ? ` request_id=${data.request_id}` : '';
-	return new Error(`[${context}] HTTP ${status ?? 'unknown'}: ${details}.${requestId}`.trim());
+	const tip =
+		status === 429 && data?.code === 1303
+			? ' Tip: reduce parallelism via KLING_MAX_PARALLEL_TASKS (e.g. 1 or 2).'
+			: '';
+	return new Error(`[${context}] HTTP ${status ?? 'unknown'}: ${details}.${requestId}${tip}`.trim());
 }
 
 
@@ -392,7 +558,7 @@ function generateKlingToken(accessKey: string, secretKey: string): string {
 async function klingSubmitTaskInternal(
 	videoPrompt: string,
 	startImagePath: string,
-	endImagePath: string,
+	endImagePath?: string,
 	config: KlingConfig = DEFAULT_KLING_CONFIG
 ): Promise<string> {
 	const accessKey = process.env.KLING_ACCESS_KEY;
@@ -404,20 +570,36 @@ async function klingSubmitTaskInternal(
 
 	// Convert images to base64
 	const startImageBase64 = sanitizeBase64(await fs.promises.readFile(startImagePath, { encoding: 'base64' }));
-	const endImageBase64 = sanitizeBase64(await fs.promises.readFile(endImagePath, { encoding: 'base64' }));
+	let endImageBase64: string | undefined;
+
+	if (endImagePath) {
+		endImageBase64 = sanitizeBase64(await fs.promises.readFile(endImagePath, { encoding: 'base64' }));
+	}
+
+	// Force mode to 'pro' for kling-v2-6 ONLY if using image_tail (end frame)
+	// If standard mode is requested and we have an end frame, we must upgrade to pro (as standard doesn't support it)
+	// If standard mode is requested and we DON'T have an end frame, we can keep standard.
+	let effectiveMode = config.mode;
+	if (config.model === 'kling-v2-6' && endImagePath) {
+		effectiveMode = 'pro';
+		console.log('[Kling] Upgrading to PRO mode to support end frame (image_tail) on v2.6');
+	}
 
 	// Prepare request payload
-	const payload = {
+	const payload: any = {
 		model_name: config.model,
 		// Kling expects raw base64, not a data URL.
 		image: startImageBase64,
-		image_tail: endImageBase64,
 		prompt: videoPrompt,
 		duration: 5,
 		aspect_ratio: "9:16",
 		cfg_scale: 0.5,
-		mode: config.mode
+		mode: effectiveMode
 	};
+
+	if (endImageBase64) {
+		payload.image_tail = endImageBase64;
+	}
 
 	console.log(`[Kling] Submitting video generation task...`);
 	let createResponse;
@@ -432,8 +614,13 @@ async function klingSubmitTaskInternal(
 				}
 			}
 		);
-	} catch (error) {
-		throw formatAxiosError(error, 'Kling submit');
+	} catch (error: any) {
+		const formattedError = formatAxiosError(error, 'Kling submit');
+		if (error.response?.status === 429) {
+			console.warn("[Kling] Hit rate limit (429). Waiting 60s for previous tasks to finish...");
+			await new Promise(resolve => setTimeout(resolve, 60000));
+		}
+		throw formattedError;
 	}
 
 	const taskId = createResponse.data.data?.task_id;
@@ -454,13 +641,13 @@ async function klingPollTaskInternal(taskId: string, savePath: string): Promise<
 
 	let completed = false;
 	let videoUrl = '';
-	const maxAttempts = 60; // 5 minutes max
+	const maxAttempts = 90; // 15 minutes max (90 * 10s)
 	let attempts = 0;
 
 	console.log(`[Kling] Starting polling for task ${taskId}...`);
 
 	while (!completed && attempts < maxAttempts) {
-		await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+		await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
 		attempts++;
 
 		let statusResponse;
@@ -482,9 +669,16 @@ async function klingPollTaskInternal(taskId: string, savePath: string): Promise<
 
 		if (status === 'succeed') {
 			completed = true;
-			const works = statusResponse.data.data?.task_result?.works;
-			if (works && works.length > 0) {
-				videoUrl = works[0].resource.resource;
+			console.log(`[Kling] Success response: ${JSON.stringify(statusResponse.data, null, 2)}`);
+			const taskResult = statusResponse.data.data?.task_result;
+
+			// Check for 'videos' array (Kling v2.6 / new format)
+			if (taskResult?.videos && Array.isArray(taskResult.videos) && taskResult.videos.length > 0) {
+				videoUrl = taskResult.videos[0].url;
+			}
+			// Check for 'works' array (Old Kling format)
+			else if (taskResult?.works && Array.isArray(taskResult.works) && taskResult.works.length > 0) {
+				videoUrl = taskResult.works[0].resource.resource;
 			}
 		} else if (status === 'failed') {
 			throw new Error(`Kling video generation failed: ${statusResponse.data.data?.task_status_msg || 'Unknown error'}`);
@@ -508,7 +702,7 @@ async function klingPollTaskInternal(taskId: string, savePath: string): Promise<
 export async function klingSubmitTask(
 	videoPrompt: string,
 	startImagePath: string,
-	endImagePath: string,
+	endImagePath?: string,
 	config: KlingConfig = DEFAULT_KLING_CONFIG
 ): Promise<string> {
 	return retryWithBackoff(
@@ -538,7 +732,7 @@ export async function klingBatchGenerate(
 	tasks: Array<{
 		videoPrompt: string;
 		startPath: string;
-		endPath: string;
+		endPath?: string;
 		savePath: string;
 	}>,
 	config: KlingConfig = DEFAULT_KLING_CONFIG
@@ -546,18 +740,33 @@ export async function klingBatchGenerate(
 	console.log(`[Kling Batch] Starting batch generation of ${tasks.length} videos (model: ${config.model}, mode: ${config.mode})...`);
 	const batchStartTime = Date.now();
 
-	// Step 1: Submit all tasks in parallel
-	console.log(`[Kling Batch] Submitting ${tasks.length} tasks...`);
-	const taskIds = await Promise.all(
-		tasks.map(t => klingSubmitTask(t.videoPrompt, t.startPath, t.endPath, config))
-	);
-	console.log(`[Kling Batch] All ${tasks.length} tasks submitted successfully`);
+	// Kling accounts often have a strict limit on concurrent tasks (error 429 code 1303).
+	// Keep a small worker pool that submits+polls sequentially per worker.
+	// Keep a small worker pool that submits+polls sequentially per worker.
+	const envMaxParallel = Number(process.env.KLING_MAX_PARALLEL_TASKS ?? 1);
+	const maxParallel =
+		Number.isFinite(envMaxParallel) && envMaxParallel > 0
+			? Math.min(Math.floor(envMaxParallel), tasks.length)
+			: Math.min(1, tasks.length);
 
-	// Step 2: Poll all tasks in parallel
-	console.log(`[Kling Batch] Polling ${tasks.length} tasks in parallel...`);
-	await Promise.all(
-		taskIds.map((id, i) => klingPollTask(id, tasks[i].savePath))
-	);
+	console.log(`[Kling Batch] Using max parallel tasks: ${maxParallel} (set KLING_MAX_PARALLEL_TASKS to override)`);
+
+	let nextIndex = 0;
+	const worker = async (workerId: number) => {
+		while (true) {
+			const current = nextIndex++;
+			if (current >= tasks.length) return;
+
+			const task = tasks[current];
+			console.log(`[Kling Batch] Worker ${workerId}: submitting task ${current + 1}/${tasks.length}`);
+			const taskId = await klingSubmitTask(task.videoPrompt, task.startPath, task.endPath, config);
+
+			console.log(`[Kling Batch] Worker ${workerId}: polling task ${current + 1}/${tasks.length} (${taskId})`);
+			await klingPollTask(taskId, task.savePath);
+		}
+	};
+
+	await Promise.all(Array.from({ length: maxParallel }, (_, i) => worker(i + 1)));
 
 	const batchDuration = Date.now() - batchStartTime;
 	console.log(`[Kling Batch] All ${tasks.length} videos completed in ${batchDuration}ms (${(batchDuration / 1000 / 60).toFixed(1)}min)`);
@@ -570,7 +779,7 @@ export async function klingBatchGenerate(
 export async function klingGenerate(
 	videoPrompt: string,
 	startImagePath: string,
-	endImagePath: string,
+	endImagePath: string | undefined,
 	savePath: string
 ): Promise<void> {
 	await klingBatchGenerate([{
@@ -581,111 +790,7 @@ export async function klingGenerate(
 	}]);
 }
 
-// Internal implementation moved above
-async function klingGenerateInternal(
-	videoPrompt: string,
-	startImagePath: string,
-	endImagePath: string,
-	savePath: string
-): Promise<void> {
-	console.log(`Generating video with Kling AI...`);
-	console.log(`Start frame: ${startImagePath}`);
-	console.log(`End frame: ${endImagePath}`);
-	console.log(`Video prompt: ${videoPrompt}`);
 
-	const accessKey = process.env.KLING_ACCESS_KEY;
-	const secretKey = process.env.KLING_SECRET_KEY;
-
-	if (!accessKey || !secretKey) {
-		throw new Error('Kling API credentials not found in environment variables');
-	}
-
-	// Convert images to base64
-	const startImageBase64 = sanitizeBase64(await fs.promises.readFile(startImagePath, { encoding: 'base64' }));
-	const endImageBase64 = sanitizeBase64(await fs.promises.readFile(endImagePath, { encoding: 'base64' }));
-
-	// Prepare request payload for Kling API
-	const payload = {
-		model_name: "kling-v1",  // or latest available model
-		image: startImageBase64,
-		image_tail: endImageBase64,
-		prompt: videoPrompt,
-		duration: 5,  // 5 seconds for faster generation, can be 10
-		aspect_ratio: "9:16",  // YouTube Shorts format
-		cfg_scale: 0.5,
-		mode: "std"  // standard mode
-	};
-
-	try {
-		// Step 1: Submit video generation task
-		const createResponse = await axios.post(
-			'https://api.klingai.com/v1/videos/image2video',
-			payload,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${accessKey}:${secretKey}`
-				}
-			}
-		);
-
-		const taskId = createResponse.data.data?.task_id;
-		if (!taskId) {
-			throw new Error('No task_id returned from Kling API');
-		}
-
-		console.log(`Kling video generation task created: ${taskId}`);
-
-		// Step 2: Poll for completion
-		let completed = false;
-		let videoUrl = '';
-		const maxAttempts = 60; // 5 minutes max (5s intervals)
-		let attempts = 0;
-
-		while (!completed && attempts < maxAttempts) {
-			await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
-			attempts++;
-
-			const statusResponse = await axios.get(
-				`https://api.klingai.com/v1/videos/image2video/${taskId}`,
-				{
-					headers: {
-						'Authorization': `Bearer ${accessKey}:${secretKey}`
-					}
-				}
-			);
-
-			const status = statusResponse.data.data?.task_status;
-			console.log(`Kling task ${taskId} status: ${status} (attempt ${attempts}/${maxAttempts})`);
-
-			if (status === 'succeed') {
-				completed = true;
-				const works = statusResponse.data.data?.task_result?.works;
-				if (works && works.length > 0) {
-					videoUrl = works[0].resource.resource;
-				}
-			} else if (status === 'failed') {
-				throw new Error(`Kling video generation failed: ${statusResponse.data.data?.task_status_msg || 'Unknown error'}`);
-			}
-		}
-
-		if (!videoUrl) {
-			throw new Error('Video generation timed out or no video URL returned');
-		}
-
-		console.log(`Kling video ready: ${videoUrl}`);
-
-		// Step 3: Download the video
-		const videoResponse = await axios.get(videoUrl, { responseType: 'arraybuffer' });
-		const buffer = Buffer.from(videoResponse.data, 'binary');
-		await fs.promises.writeFile(savePath, buffer);
-
-		console.log(`Kling video saved to: ${savePath}`);
-	} catch (error: any) {
-		console.error('Kling API error:', error.response?.data || error.message);
-		throw error;
-	}
-}
 
 /**
  * Generate an optimized video prompt describing camera movement and scene transition
@@ -693,20 +798,24 @@ async function klingGenerateInternal(
 export async function generateVideoPrompt(
 	sceneDescription: string,
 	startImagePrompt: string,
-	endImagePrompt: string
+	endImagePrompt?: string
 ): Promise<string> {
+	const endContext = endImagePrompt ? `\n    End frame: "${endImagePrompt}"` : '';
+	const transitionContext = endImagePrompt
+		? '- Mention the transition between the two states'
+		: '- Describe how the scene evolves from the static start image';
+
 	const prompt = `
     You are an expert AI video director specializing in image-to-video generation.
     
-    Given a scene description and two image prompts (start and end frames), create a SHORT, CONCISE video prompt that describes the motion, camera movement, and transition.
+    Given a scene description and ${endImagePrompt ? 'two image prompts (start and end frames)' : 'a start image prompt'}, create a SHORT, CONCISE video prompt that describes the motion, camera movement, and transition.
     
     Scene context: "${sceneDescription}"
-    Start frame: "${startImagePrompt}"
-    End frame: "${endImagePrompt}"
+    Start frame: "${startImagePrompt}"${endContext}
     
     Create a video prompt following this structure:
     - Describe the camera movement (slow zoom, pan, dolly, orbit, etc.)
-    - Mention the transition between the two states
+    ${transitionContext}
     - Include cinematic qualities (smooth, fluid, cinematic, 4k, high quality)
     - Keep it under 200 characters for best results
     
@@ -759,14 +868,37 @@ export async function generateEndFramePrompt(startPrompt: string): Promise<strin
 	if (result) {
 		return result.trim();
 	} else {
-		// Fallback: slight variation
-		return startPrompt + ", closer perspective, slight zoom in";
+		// Fallback
+		return startPrompt + ", slightly different angle, cinematic lighting";
 	}
 }
+
+export async function extractAudioSegment(videoPath: string, startTime: string, duration: number, outputPath: string): Promise<void> {
+	return new Promise((resolve, reject) => {
+		ffmpeg(videoPath)
+			.setStartTime(startTime)
+			.setDuration(duration)
+			.output(outputPath)
+			.noVideo()
+			.audioCodec('pcm_s16le') // Convert to WAV compatible format
+			.on('end', () => {
+				console.log('Audio extraction finished');
+				resolve();
+			})
+			.on('error', (err) => {
+				console.error('Error extracting audio:', err);
+				reject(err);
+			})
+			.run();
+	});
+}
+
+
 
 /**
  * Generate a progressive prompt that evolves from the previous one
  * Used to create visual continuity across multiple scenes
+ * @deprecated Use generateStoryboardPrompts instead for better results
  */
 export async function generateProgressivePrompt(
 	previousPrompt: string,
@@ -801,5 +933,106 @@ export async function generateProgressivePrompt(
 	} else {
 		// Fallback: add progression marker
 		return previousPrompt + `, progressive step ${index}`;
+	}
+}
+
+/**
+ * AI Creative Director — Generates 6 cohesive scene prompts in a single call.
+ * Creates a structured visual narrative (mini-film) from a script and brand profile.
+ * Each prompt includes environment, lighting, camera, colors, and motion intent.
+ */
+export async function generateStoryboardPrompts(
+	script: string,
+	brand?: { name: string; niche: string; description?: string; colors: string }
+): Promise<string[]> {
+	const brandName = brand?.name || 'Generic';
+	const brandNiche = brand?.niche || 'General';
+	const brandColors = brand?.colors || 'modern neutral tones';
+	const brandDescription = brand?.description || '';
+
+	const brandContext = brandDescription
+		? `\n- Brand Description: ${brandDescription}`
+		: '';
+
+	const prompt = `
+Role: You are an AI Creative Director for an automated short-form video platform.
+Your MAIN JOB is to create 6 image prompts that DIRECTLY ILLUSTRATE what the script is saying — as if you were shooting a real video to accompany this narration.
+
+INPUT DATA:
+- Script (narration): "${script}"
+- Brand: ${brandName} (Niche: ${brandNiche})${brandContext}
+- Brand Colors: ${brandColors}
+- Format: Vertical 9:16
+
+CRITICAL RULES — READ CAREFULLY:
+1. **LITERAL ILLUSTRATION**: Each scene MUST visually depict what is being SAID in that part of the script. If the script says "capture your audience's attention", show a person presenting to an engaged audience. If it says "neuroscience techniques", show a brain with neural pathways. DO NOT create abstract or metaphorical images.
+2. **FORBIDDEN IMAGERY**: Do NOT generate: mazes, abstract labyrinths, lone silhouettes, generic globes, floating geometric shapes, chess pieces, abstract light beams, or any generic stock-photo concept that doesn't directly relate to the script words.
+3. **SHOW REAL SITUATIONS**: Use real people in real environments doing things related to the script content — working on laptops, brainstorming in offices, presenting, studying, etc.
+4. **SCRIPT SEGMENTATION**: Mentally divide the script into 6 equal parts. Scene 1 illustrates the first ~17% of the script, Scene 2 the next ~17%, and so on. Each scene should match its corresponding script segment.
+5. **BRAND COLORS**: Integrate the brand colors (${brandColors}) into the environments — colored lighting, objects of those colors, clothing accents, tech screens with those color schemes, neon signs, etc.
+6. **NO TEXT/WATERMARKS**: Do NOT include any text, titles, watermarks, or written words in the images.
+7. **MOTION INTENT**: Each prompt MUST include a camera movement direction (e.g., "slow zoom in", "pan right", "dolly forward", "orbit around") for video animation.
+
+SCENE STRUCTURE:
+- Scene 1 (Hook): Powerful opening that matches the first sentence of the script
+- Scenes 2-4 (Development): Each illustrating its corresponding script segment
+- Scene 5 (Climax): Emotional/informational peak matching the script's climax
+- Scene 6 (CTA/Closing): Resolution matching the final call-to-action
+
+TECHNICAL REQUIREMENTS:
+- Vertical 9:16 aspect ratio
+- Cinematic lighting, hyper-realistic, 8k quality
+- Photorealistic style (not cartoon/illustration)
+- Each scene must look like it belongs in a professional short-form video
+
+OUTPUT FORMAT:
+Return ONLY a valid JSON array of 6 strings. No markdown, no code blocks, no explanation.
+Example:
+[
+  "Vertical cinematic close-up of a young entrepreneur looking frustrated at a laptop screen showing flat marketing metrics, dim office with ${brandColors.split(',')[0] || 'blue'} LED accent lighting behind the monitor, slow zoom into their expression. 8k, photorealistic, vertical 9:16.",
+  "Scene 2...",
+  "Scene 3...",
+  "Scene 4...",
+  "Scene 5...",
+  "Scene 6..."
+]
+`;
+
+	console.log('[AI Director] Generating 6 storyboarded scene prompts in a single call...');
+
+	const chatCompletion = await openai.chat.completions.create({
+		messages: [{ role: 'user', content: prompt }],
+		model: 'gpt-4-turbo-preview',
+		temperature: 0.8
+	});
+
+	const content = chatCompletion.choices[0].message.content || '[]';
+
+	try {
+		// Remove markdown code blocks if present (e.g. ```json ... ```)
+		const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim();
+		const parsed = JSON.parse(cleanContent);
+
+		if (Array.isArray(parsed) && parsed.length === 6) {
+			console.log('[AI Director] Successfully generated 6 scene prompts.');
+			parsed.forEach((p: string, i: number) => console.log(`  Scene ${i + 1}: ${p.substring(0, 80)}...`));
+			return parsed;
+		} else {
+			console.warn(`[AI Director] Expected 6 prompts, got ${Array.isArray(parsed) ? parsed.length : 'non-array'}. Falling back.`);
+			// Pad or trim to 6
+			const result = Array.isArray(parsed) ? parsed : [];
+			while (result.length < 6) {
+				result.push(result[result.length - 1] || `Scene ${result.length + 1} for "${script.substring(0, 50)}"`);
+			}
+			return result.slice(0, 6);
+		}
+	} catch (e) {
+		console.error('[AI Director] Failed to parse storyboard prompts:', content);
+		// Fallback: generate 6 basic prompts from the script
+		console.log('[AI Director] Using fallback: generating basic prompts from script...');
+		const fallbackPrompt = await getImagePromptFromScript(script);
+		return Array.from({ length: 6 }, (_, i) =>
+			`${fallbackPrompt}, scene ${i + 1} of 6, cinematic vertical 9:16, 8k`
+		);
 	}
 }

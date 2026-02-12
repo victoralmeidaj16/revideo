@@ -1,451 +1,1050 @@
 {
-  "audioUrl": "3f4c8dd8-81a9-4add-bb13-e67bad196872-audio.wav",
+  "audioUrl": "523c79d7-421c-42c9-bebf-3878991da6d5-audio.wav",
   "mediaAssets": [
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-0.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-1.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-2.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-3.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-4.png"
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-0.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-1.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-2.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-3.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-4.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-5.mp4"
   ],
-  "isVideoMode": false,
-  "videos": [],
+  "isVideoMode": true,
+  "videos": [
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-0.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-1.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-2.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-3.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-4.mp4",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-video-5.mp4"
+  ],
   "images": [
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-0.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-1.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-2.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-3.png",
-    "/3f4c8dd8-81a9-4add-bb13-e67bad196872-base-image-4.png"
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-image-0.png",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-image-1.png",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-image-2.png",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-image-3.png",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-image-4.png",
+    "/523c79d7-421c-42c9-bebf-3878991da6d5-image-5.png"
   ],
   "words": [
     {
       "punctuated_word": "Você",
       "start": 0.031,
-      "end": 0.311
+      "end": 0.351
     },
     {
       "punctuated_word": "sabia",
-      "start": 0.311,
-      "end": 0.791
+      "start": 0.351,
+      "end": 0.731
     },
     {
       "punctuated_word": "que",
-      "start": 0.791,
-      "end": 1.031
+      "start": 0.731,
+      "end": 0.951
     },
     {
-      "punctuated_word": "nossa",
-      "start": 1.031,
-      "end": 1.351
+      "punctuated_word": "cada",
+      "start": 0.951,
+      "end": 1.151
     },
     {
-      "punctuated_word": "mente",
-      "start": 1.351,
+      "punctuated_word": "vez",
+      "start": 1.151,
+      "end": 1.371
+    },
+    {
+      "punctuated_word": "que",
+      "start": 1.371,
+      "end": 1.511
+    },
+    {
+      "punctuated_word": "você",
+      "start": 1.511,
       "end": 1.751
     },
     {
-      "punctuated_word": "tem",
+      "punctuated_word": "procrastina,",
       "start": 1.751,
-      "end": 2.011
+      "end": 2.531
     },
     {
-      "punctuated_word": "truques",
-      "start": 2.011,
-      "end": 2.371
+      "punctuated_word": "você",
+      "start": 2.951,
+      "end": 3.131
     },
     {
-      "punctuated_word": "incríveis?",
-      "start": 2.371,
-      "end": 2.971
+      "punctuated_word": "está,",
+      "start": 3.131,
+      "end": 3.451
     },
     {
-      "punctuated_word": "Aqui",
-      "start": 3.611,
-      "end": 3.911
+      "punctuated_word": "na",
+      "start": 3.631,
+      "end": 3.731
     },
     {
-      "punctuated_word": "vão",
-      "start": 3.911,
-      "end": 4.171
+      "punctuated_word": "verdade,",
+      "start": 3.731,
+      "end": 4.071
     },
     {
-      "punctuated_word": "algumas",
-      "start": 4.171,
-      "end": 4.631
+      "punctuated_word": "lutando",
+      "start": 4.271,
+      "end": 4.731
     },
     {
-      "punctuated_word": "curiosidades",
-      "start": 4.631,
-      "end": 5.451
+      "punctuated_word": "contra",
+      "start": 4.731,
+      "end": 5.091
     },
     {
-      "punctuated_word": "sobre",
-      "start": 5.451,
-      "end": 5.831
+      "punctuated_word": "o",
+      "start": 5.091,
+      "end": 5.251
     },
     {
-      "punctuated_word": "a",
-      "start": 5.831,
-      "end": 6.011
+      "punctuated_word": "seu",
+      "start": 5.251,
+      "end": 5.391
     },
     {
-      "punctuated_word": "psicologia",
-      "start": 6.011,
-      "end": 6.771
+      "punctuated_word": "próprio",
+      "start": 5.391,
+      "end": 5.751
     },
     {
-      "punctuated_word": "que",
-      "start": 6.771,
-      "end": 7.031
+      "punctuated_word": "cérebro?",
+      "start": 5.751,
+      "end": 6.311
     },
     {
-      "punctuated_word": "vão",
-      "start": 7.031,
-      "end": 7.291
+      "punctuated_word": "Isso",
+      "start": 6.931,
+      "end": 7.231
     },
     {
-      "punctuated_word": "te",
-      "start": 7.291,
-      "end": 7.471
+      "punctuated_word": "mesmo.",
+      "start": 7.231,
+      "end": 7.651
     },
     {
-      "punctuated_word": "surpreender.",
-      "start": 7.471,
-      "end": 8.211
+      "punctuated_word": "Quando",
+      "start": 8.211,
+      "end": 8.451
     },
     {
-      "punctuated_word": "Primeiro,",
-      "start": 8.791,
-      "end": 9.291
+      "punctuated_word": "adiamos",
+      "start": 8.451,
+      "end": 9.011
     },
     {
-      "punctuated_word": "sonhar",
-      "start": 9.771,
-      "end": 10.151
+      "punctuated_word": "uma",
+      "start": 9.011,
+      "end": 9.231
     },
     {
-      "punctuated_word": "não",
-      "start": 10.151,
-      "end": 10.371
+      "punctuated_word": "tarefa,",
+      "start": 9.231,
+      "end": 9.791
     },
     {
-      "punctuated_word": "é",
-      "start": 10.371,
-      "end": 10.491
+      "punctuated_word": "ativa-se",
+      "start": 10.271,
+      "end": 10.711
     },
     {
-      "punctuated_word": "apenas",
-      "start": 10.491,
+      "punctuated_word": "uma",
+      "start": 10.711,
       "end": 10.911
     },
     {
-      "punctuated_word": "uma",
+      "punctuated_word": "área",
       "start": 10.911,
-      "end": 11.131
+      "end": 11.191
     },
     {
-      "punctuated_word": "questão",
-      "start": 11.131,
-      "end": 11.471
-    },
-    {
-      "punctuated_word": "de",
-      "start": 11.471,
-      "end": 11.651
-    },
-    {
-      "punctuated_word": "dormir",
-      "start": 11.651,
-      "end": 11.951
-    },
-    {
-      "punctuated_word": "bem,",
-      "start": 11.951,
-      "end": 12.311
-    },
-    {
-      "punctuated_word": "mas",
-      "start": 12.731,
-      "end": 12.911
-    },
-    {
-      "punctuated_word": "também",
-      "start": 12.911,
-      "end": 13.231
-    },
-    {
-      "punctuated_word": "uma",
-      "start": 13.231,
-      "end": 13.471
-    },
-    {
-      "punctuated_word": "forma",
-      "start": 13.471,
-      "end": 13.931
-    },
-    {
-      "punctuated_word": "de",
-      "start": 13.931,
-      "end": 14.131
-    },
-    {
-      "punctuated_word": "nosso",
-      "start": 14.131,
-      "end": 14.391
+      "punctuated_word": "do",
+      "start": 11.191,
+      "end": 11.391
     },
     {
       "punctuated_word": "cérebro",
-      "start": 14.391,
-      "end": 14.991
+      "start": 11.391,
+      "end": 11.851
     },
     {
-      "punctuated_word": "processar",
-      "start": 14.991,
-      "end": 15.751
+      "punctuated_word": "chamada",
+      "start": 11.851,
+      "end": 12.311
     },
     {
-      "punctuated_word": "emoções",
-      "start": 15.751,
-      "end": 16.271
+      "punctuated_word": "córtex",
+      "start": 12.311,
+      "end": 13.051
     },
     {
-      "punctuated_word": "intensas.",
-      "start": 16.271,
-      "end": 17.111
+      "punctuated_word": "pré-frontal,",
+      "start": 13.051,
+      "end": 13.871
     },
     {
-      "punctuated_word": "E",
-      "start": 17.611,
-      "end": 17.771
+      "punctuated_word": "responsável",
+      "start": 14.251,
+      "end": 14.931
     },
     {
-      "punctuated_word": "a",
-      "start": 17.771,
-      "end": 17.891
+      "punctuated_word": "pelo",
+      "start": 14.931,
+      "end": 15.191
     },
     {
-      "punctuated_word": "psicologia",
-      "start": 17.891,
-      "end": 18.511
-    },
-    {
-      "punctuated_word": "das",
-      "start": 18.511,
-      "end": 18.771
-    },
-    {
-      "punctuated_word": "cores?",
-      "start": 18.771,
-      "end": 19.051
-    },
-    {
-      "punctuated_word": "Elas",
-      "start": 19.731,
-      "end": 20.031
-    },
-    {
-      "punctuated_word": "podem",
-      "start": 20.031,
-      "end": 20.331
-    },
-    {
-      "punctuated_word": "influenciar",
-      "start": 20.331,
-      "end": 21.271
-    },
-    {
-      "punctuated_word": "nossas",
-      "start": 21.271,
-      "end": 21.571
-    },
-    {
-      "punctuated_word": "decisões",
-      "start": 21.571,
-      "end": 22.171
+      "punctuated_word": "planejamento",
+      "start": 15.191,
+      "end": 16.011
     },
     {
       "punctuated_word": "e",
-      "start": 22.171,
-      "end": 22.451
+      "start": 16.011,
+      "end": 16.431
     },
     {
-      "punctuated_word": "humor.",
-      "start": 22.451,
-      "end": 22.751
+      "punctuated_word": "pela",
+      "start": 16.431,
+      "end": 16.651
     },
     {
-      "punctuated_word": "Por",
-      "start": 23.231,
-      "end": 23.391
-    },
-    {
-      "punctuated_word": "exemplo,",
-      "start": 23.391,
-      "end": 23.731
-    },
-    {
-      "punctuated_word": "o",
-      "start": 24.151,
-      "end": 24.311
-    },
-    {
-      "punctuated_word": "azul",
-      "start": 24.311,
-      "end": 24.631
-    },
-    {
-      "punctuated_word": "pode",
-      "start": 24.631,
-      "end": 24.991
-    },
-    {
-      "punctuated_word": "nos",
-      "start": 24.991,
-      "end": 25.211
-    },
-    {
-      "punctuated_word": "acalmar",
-      "start": 25.211,
-      "end": 25.791
-    },
-    {
-      "punctuated_word": "enquanto",
-      "start": 25.791,
-      "end": 26.251
-    },
-    {
-      "punctuated_word": "o",
-      "start": 26.251,
-      "end": 26.471
-    },
-    {
-      "punctuated_word": "vermelho",
-      "start": 26.471,
-      "end": 26.971
-    },
-    {
-      "punctuated_word": "aumenta",
-      "start": 26.971,
-      "end": 27.571
-    },
-    {
-      "punctuated_word": "nossa",
-      "start": 27.571,
-      "end": 27.871
-    },
-    {
-      "punctuated_word": "energia.",
-      "start": 27.871,
-      "end": 28.391
-    },
-    {
-      "punctuated_word": "E",
-      "start": 29.208,
-      "end": 29.348
-    },
-    {
-      "punctuated_word": "aí,",
-      "start": 29.348,
-      "end": 29.628
-    },
-    {
-      "punctuated_word": "ficou",
-      "start": 30.028,
-      "end": 30.248
-    },
-    {
-      "punctuated_word": "curioso",
-      "start": 30.248,
-      "end": 30.888
-    },
-    {
-      "punctuated_word": "para",
-      "start": 30.888,
-      "end": 31.068
-    },
-    {
-      "punctuated_word": "saber",
-      "start": 31.068,
-      "end": 31.408
-    },
-    {
-      "punctuated_word": "mais",
-      "start": 31.408,
-      "end": 31.768
-    },
-    {
-      "punctuated_word": "sobre",
-      "start": 31.768,
-      "end": 32.028
-    },
-    {
-      "punctuated_word": "como",
-      "start": 32.028,
-      "end": 32.328
-    },
-    {
-      "punctuated_word": "sua",
-      "start": 32.328,
-      "end": 32.588
-    },
-    {
-      "punctuated_word": "mente",
-      "start": 32.588,
-      "end": 32.828
-    },
-    {
-      "punctuated_word": "funciona?",
-      "start": 32.828,
-      "end": 33.408
-    },
-    {
-      "punctuated_word": "A",
-      "start": 34.008,
-      "end": 34.248
-    },
-    {
-      "punctuated_word": "psicologia",
-      "start": 34.248,
-      "end": 34.908
-    },
-    {
-      "punctuated_word": "está",
-      "start": 34.908,
-      "end": 35.308
-    },
-    {
-      "punctuated_word": "cheia",
-      "start": 35.308,
-      "end": 35.748
+      "punctuated_word": "tomada",
+      "start": 16.651,
+      "end": 17.051
     },
     {
       "punctuated_word": "de",
-      "start": 35.748,
-      "end": 35.948
+      "start": 17.051,
+      "end": 17.211
     },
     {
-      "punctuated_word": "segredos",
-      "start": 35.948,
-      "end": 36.428
+      "punctuated_word": "decisões.",
+      "start": 17.211,
+      "end": 17.811
     },
     {
-      "punctuated_word": "esperando",
-      "start": 36.428,
-      "end": 36.908
+      "punctuated_word": "Mas",
+      "start": 18.307,
+      "end": 18.567
+    },
+    {
+      "punctuated_word": "aqui",
+      "start": 18.567,
+      "end": 18.827
+    },
+    {
+      "punctuated_word": "vem",
+      "start": 18.827,
+      "end": 19.007
+    },
+    {
+      "punctuated_word": "o",
+      "start": 19.007,
+      "end": 19.147
+    },
+    {
+      "punctuated_word": "choque.",
+      "start": 19.147,
+      "end": 19.547
+    },
+    {
+      "punctuated_word": "Enquanto",
+      "start": 20.047,
+      "end": 20.327
+    },
+    {
+      "punctuated_word": "você",
+      "start": 20.327,
+      "end": 20.647
+    },
+    {
+      "punctuated_word": "tenta",
+      "start": 20.647,
+      "end": 21.087
+    },
+    {
+      "punctuated_word": "decidir",
+      "start": 21.087,
+      "end": 21.647
+    },
+    {
+      "punctuated_word": "começar",
+      "start": 21.647,
+      "end": 22.087
+    },
+    {
+      "punctuated_word": "aquela",
+      "start": 22.087,
+      "end": 22.507
+    },
+    {
+      "punctuated_word": "tarefa",
+      "start": 22.507,
+      "end": 22.947
+    },
+    {
+      "punctuated_word": "importante,",
+      "start": 22.947,
+      "end": 23.747
+    },
+    {
+      "punctuated_word": "outra",
+      "start": 24.187,
+      "end": 24.447
+    },
+    {
+      "punctuated_word": "parte",
+      "start": 24.447,
+      "end": 24.847
+    },
+    {
+      "punctuated_word": "do",
+      "start": 24.847,
+      "end": 25.047
+    },
+    {
+      "punctuated_word": "cérebro,",
+      "start": 25.047,
+      "end": 25.547
+    },
+    {
+      "punctuated_word": "o",
+      "start": 25.867,
+      "end": 25.987
+    },
+    {
+      "punctuated_word": "sistema",
+      "start": 25.987,
+      "end": 26.367
+    },
+    {
+      "punctuated_word": "límbico,",
+      "start": 26.367,
+      "end": 26.887
+    },
+    {
+      "punctuated_word": "uma",
+      "start": 27.287,
+      "end": 27.427
+    },
+    {
+      "punctuated_word": "das",
+      "start": 27.427,
+      "end": 27.667
+    },
+    {
+      "punctuated_word": "partes",
+      "start": 27.667,
+      "end": 27.947
+    },
+    {
+      "punctuated_word": "mais",
+      "start": 27.947,
+      "end": 28.387
+    },
+    {
+      "punctuated_word": "antigas",
+      "start": 28.387,
+      "end": 29.047
+    },
+    {
+      "punctuated_word": "do",
+      "start": 29.047,
+      "end": 29.207
+    },
+    {
+      "punctuated_word": "cérebro",
+      "start": 29.207,
+      "end": 29.627
+    },
+    {
+      "punctuated_word": "humano,",
+      "start": 29.627,
+      "end": 30.087
+    },
+    {
+      "punctuated_word": "responsável",
+      "start": 30.467,
+      "end": 31.087
+    },
+    {
+      "punctuated_word": "pelas",
+      "start": 31.087,
+      "end": 31.447
+    },
+    {
+      "punctuated_word": "emoções,",
+      "start": 31.447,
+      "end": 31.987
+    },
+    {
+      "punctuated_word": "está",
+      "start": 32.467,
+      "end": 32.687
+    },
+    {
+      "punctuated_word": "trabalhando",
+      "start": 32.687,
+      "end": 33.327
     },
     {
       "punctuated_word": "para",
-      "start": 36.908,
-      "end": 37.208
+      "start": 33.327,
+      "end": 33.567
     },
     {
-      "punctuated_word": "serem",
-      "start": 37.208,
-      "end": 37.428
+      "punctuated_word": "te",
+      "start": 33.567,
+      "end": 33.767
     },
     {
-      "punctuated_word": "descobertos.",
-      "start": 37.428,
-      "end": 38.328
+      "punctuated_word": "manter",
+      "start": 33.767,
+      "end": 34.067
+    },
+    {
+      "punctuated_word": "exatamente",
+      "start": 34.067,
+      "end": 34.747
+    },
+    {
+      "punctuated_word": "onde",
+      "start": 34.747,
+      "end": 35.147
+    },
+    {
+      "punctuated_word": "você",
+      "start": 35.147,
+      "end": 35.467
+    },
+    {
+      "punctuated_word": "está,",
+      "start": 35.467,
+      "end": 35.867
+    },
+    {
+      "punctuated_word": "no",
+      "start": 36.267,
+      "end": 36.407
+    },
+    {
+      "punctuated_word": "conforto",
+      "start": 36.407,
+      "end": 37.087
+    },
+    {
+      "punctuated_word": "e",
+      "start": 37.087,
+      "end": 37.267
+    },
+    {
+      "punctuated_word": "longe",
+      "start": 37.267,
+      "end": 37.587
+    },
+    {
+      "punctuated_word": "do",
+      "start": 37.587,
+      "end": 37.767
+    },
+    {
+      "punctuated_word": "estresse.",
+      "start": 37.767,
+      "end": 38.267
+    },
+    {
+      "punctuated_word": "É",
+      "start": 38.707,
+      "end": 38.827
+    },
+    {
+      "punctuated_word": "uma",
+      "start": 38.827,
+      "end": 38.987
+    },
+    {
+      "punctuated_word": "batalha",
+      "start": 38.987,
+      "end": 39.387
+    },
+    {
+      "punctuated_word": "interna",
+      "start": 39.387,
+      "end": 40.047
+    },
+    {
+      "punctuated_word": "entre",
+      "start": 40.047,
+      "end": 40.367
+    },
+    {
+      "punctuated_word": "o",
+      "start": 40.367,
+      "end": 40.567
+    },
+    {
+      "punctuated_word": "futuro",
+      "start": 40.567,
+      "end": 41.007
+    },
+    {
+      "punctuated_word": "eu",
+      "start": 41.007,
+      "end": 41.307
+    },
+    {
+      "punctuated_word": "produtivo",
+      "start": 41.307,
+      "end": 42.067
+    },
+    {
+      "punctuated_word": "e",
+      "start": 42.067,
+      "end": 42.467
+    },
+    {
+      "punctuated_word": "o",
+      "start": 42.467,
+      "end": 42.587
+    },
+    {
+      "punctuated_word": "atual",
+      "start": 42.587,
+      "end": 42.927
+    },
+    {
+      "punctuated_word": "eu",
+      "start": 42.927,
+      "end": 43.247
+    },
+    {
+      "punctuated_word": "que",
+      "start": 43.247,
+      "end": 43.407
+    },
+    {
+      "punctuated_word": "prefere",
+      "start": 43.407,
+      "end": 43.787
+    },
+    {
+      "punctuated_word": "o",
+      "start": 43.787,
+      "end": 43.907
+    },
+    {
+      "punctuated_word": "conforto",
+      "start": 43.907,
+      "end": 44.367
+    },
+    {
+      "punctuated_word": "imediato.",
+      "start": 44.367,
+      "end": 44.987
+    },
+    {
+      "punctuated_word": "Mas",
+      "start": 45.367,
+      "end": 45.607
+    },
+    {
+      "punctuated_word": "espere,",
+      "start": 45.607,
+      "end": 46.107
+    },
+    {
+      "punctuated_word": "fica",
+      "start": 46.527,
+      "end": 46.747
+    },
+    {
+      "punctuated_word": "ainda",
+      "start": 46.747,
+      "end": 47.027
+    },
+    {
+      "punctuated_word": "mais",
+      "start": 47.027,
+      "end": 47.427
+    },
+    {
+      "punctuated_word": "interessante.",
+      "start": 47.427,
+      "end": 47.907
+    },
+    {
+      "punctuated_word": "Você",
+      "start": 48.226,
+      "end": 48.726
+    },
+    {
+      "punctuated_word": "sabia",
+      "start": 48.726,
+      "end": 49.186
+    },
+    {
+      "punctuated_word": "que",
+      "start": 49.186,
+      "end": 49.426
+    },
+    {
+      "punctuated_word": "é",
+      "start": 49.426,
+      "end": 49.566
+    },
+    {
+      "punctuated_word": "possível",
+      "start": 49.566,
+      "end": 50.066
+    },
+    {
+      "punctuated_word": "reprogramar",
+      "start": 50.066,
+      "end": 50.866
+    },
+    {
+      "punctuated_word": "essa",
+      "start": 50.866,
+      "end": 51.046
+    },
+    {
+      "punctuated_word": "resposta",
+      "start": 51.046,
+      "end": 51.606
+    },
+    {
+      "punctuated_word": "do",
+      "start": 51.606,
+      "end": 51.786
+    },
+    {
+      "punctuated_word": "seu",
+      "start": 51.786,
+      "end": 51.986
+    },
+    {
+      "punctuated_word": "cérebro?",
+      "start": 51.986,
+      "end": 52.426
+    },
+    {
+      "punctuated_word": "Sim,",
+      "start": 52.886,
+      "end": 53.186
+    },
+    {
+      "punctuated_word": "estratégias",
+      "start": 53.646,
+      "end": 54.386
+    },
+    {
+      "punctuated_word": "como",
+      "start": 54.386,
+      "end": 54.626
+    },
+    {
+      "punctuated_word": "dividir",
+      "start": 54.626,
+      "end": 55.166
+    },
+    {
+      "punctuated_word": "tarefas",
+      "start": 55.166,
+      "end": 55.766
+    },
+    {
+      "punctuated_word": "em",
+      "start": 55.766,
+      "end": 55.946
+    },
+    {
+      "punctuated_word": "partes",
+      "start": 55.946,
+      "end": 56.266
+    },
+    {
+      "punctuated_word": "menores,",
+      "start": 56.266,
+      "end": 56.846
+    },
+    {
+      "punctuated_word": "criar",
+      "start": 57.306,
+      "end": 57.566
+    },
+    {
+      "punctuated_word": "um",
+      "start": 57.566,
+      "end": 57.766
+    },
+    {
+      "punctuated_word": "ambiente",
+      "start": 57.766,
+      "end": 58.226
+    },
+    {
+      "punctuated_word": "favorável",
+      "start": 58.226,
+      "end": 58.986
+    },
+    {
+      "punctuated_word": "ao",
+      "start": 58.986,
+      "end": 59.186
+    },
+    {
+      "punctuated_word": "trabalho",
+      "start": 59.186,
+      "end": 59.746
+    },
+    {
+      "punctuated_word": "e",
+      "start": 59.746,
+      "end": 60.146
+    },
+    {
+      "punctuated_word": "usar",
+      "start": 60.146,
+      "end": 60.486
+    },
+    {
+      "punctuated_word": "técnicas",
+      "start": 60.486,
+      "end": 61.046
+    },
+    {
+      "punctuated_word": "de",
+      "start": 61.046,
+      "end": 61.326
+    },
+    {
+      "punctuated_word": "mindfulness",
+      "start": 61.326,
+      "end": 61.866
+    },
+    {
+      "punctuated_word": "podem",
+      "start": 61.866,
+      "end": 62.566
+    },
+    {
+      "punctuated_word": "enganar",
+      "start": 62.566,
+      "end": 63.346
+    },
+    {
+      "punctuated_word": "seu",
+      "start": 63.346,
+      "end": 63.566
+    },
+    {
+      "punctuated_word": "cérebro",
+      "start": 63.566,
+      "end": 64.086
+    },
+    {
+      "punctuated_word": "para",
+      "start": 64.086,
+      "end": 64.346
+    },
+    {
+      "punctuated_word": "sair",
+      "start": 64.346,
+      "end": 64.766
+    },
+    {
+      "punctuated_word": "desse",
+      "start": 64.766,
+      "end": 65.106
+    },
+    {
+      "punctuated_word": "ciclo",
+      "start": 65.106,
+      "end": 65.506
+    },
+    {
+      "punctuated_word": "de",
+      "start": 65.506,
+      "end": 65.686
+    },
+    {
+      "punctuated_word": "procrastinação.",
+      "start": 65.686,
+      "end": 66.606
+    },
+    {
+      "punctuated_word": "Ao",
+      "start": 66.957,
+      "end": 67.477
+    },
+    {
+      "punctuated_word": "fazer",
+      "start": 67.477,
+      "end": 67.757
+    },
+    {
+      "punctuated_word": "isso,",
+      "start": 67.757,
+      "end": 68.077
+    },
+    {
+      "punctuated_word": "você",
+      "start": 68.417,
+      "end": 68.597
+    },
+    {
+      "punctuated_word": "não",
+      "start": 68.597,
+      "end": 68.797
+    },
+    {
+      "punctuated_word": "apenas",
+      "start": 68.797,
+      "end": 69.217
+    },
+    {
+      "punctuated_word": "se",
+      "start": 69.217,
+      "end": 69.477
+    },
+    {
+      "punctuated_word": "torna",
+      "start": 69.477,
+      "end": 69.757
+    },
+    {
+      "punctuated_word": "mais",
+      "start": 69.757,
+      "end": 70.017
+    },
+    {
+      "punctuated_word": "produtivo,",
+      "start": 70.017,
+      "end": 70.757
+    },
+    {
+      "punctuated_word": "mas",
+      "start": 71.017,
+      "end": 71.237
+    },
+    {
+      "punctuated_word": "também",
+      "start": 71.237,
+      "end": 71.517
+    },
+    {
+      "punctuated_word": "estimula",
+      "start": 71.517,
+      "end": 72.217
+    },
+    {
+      "punctuated_word": "a",
+      "start": 72.217,
+      "end": 72.497
+    },
+    {
+      "punctuated_word": "neuroplasticidade,",
+      "start": 72.497,
+      "end": 73.757
+    },
+    {
+      "punctuated_word": "fortalecendo",
+      "start": 74.157,
+      "end": 74.817
+    },
+    {
+      "punctuated_word": "as",
+      "start": 74.817,
+      "end": 75.017
+    },
+    {
+      "punctuated_word": "conexões",
+      "start": 75.017,
+      "end": 75.537
+    },
+    {
+      "punctuated_word": "neuronais",
+      "start": 75.537,
+      "end": 76.277
+    },
+    {
+      "punctuated_word": "que",
+      "start": 76.277,
+      "end": 76.437
+    },
+    {
+      "punctuated_word": "favorecem",
+      "start": 76.437,
+      "end": 77.097
+    },
+    {
+      "punctuated_word": "a",
+      "start": 77.097,
+      "end": 77.277
+    },
+    {
+      "punctuated_word": "ação",
+      "start": 77.277,
+      "end": 77.637
+    },
+    {
+      "punctuated_word": "e",
+      "start": 77.637,
+      "end": 77.917
+    },
+    {
+      "punctuated_word": "a",
+      "start": 77.917,
+      "end": 78.057
+    },
+    {
+      "punctuated_word": "conclusão",
+      "start": 78.057,
+      "end": 78.597
+    },
+    {
+      "punctuated_word": "de",
+      "start": 78.597,
+      "end": 78.777
+    },
+    {
+      "punctuated_word": "tarefas.",
+      "start": 78.777,
+      "end": 79.337
+    },
+    {
+      "punctuated_word": "Agora",
+      "start": 79.777,
+      "end": 80.077
+    },
+    {
+      "punctuated_word": "me",
+      "start": 80.077,
+      "end": 80.317
+    },
+    {
+      "punctuated_word": "diga,",
+      "start": 80.317,
+      "end": 80.717
+    },
+    {
+      "punctuated_word": "você",
+      "start": 80.997,
+      "end": 81.257
+    },
+    {
+      "punctuated_word": "está",
+      "start": 81.257,
+      "end": 81.537
+    },
+    {
+      "punctuated_word": "pronto",
+      "start": 81.537,
+      "end": 81.877
+    },
+    {
+      "punctuated_word": "para",
+      "start": 81.877,
+      "end": 82.077
+    },
+    {
+      "punctuated_word": "enfrentar",
+      "start": 82.077,
+      "end": 82.517
+    },
+    {
+      "punctuated_word": "a",
+      "start": 82.517,
+      "end": 82.637
+    },
+    {
+      "punctuated_word": "batalha",
+      "start": 82.637,
+      "end": 82.997
+    },
+    {
+      "punctuated_word": "interna",
+      "start": 82.997,
+      "end": 83.597
+    },
+    {
+      "punctuated_word": "e",
+      "start": 83.597,
+      "end": 83.897
+    },
+    {
+      "punctuated_word": "transformar",
+      "start": 83.897,
+      "end": 84.577
+    },
+    {
+      "punctuated_word": "a",
+      "start": 84.577,
+      "end": 84.737
+    },
+    {
+      "punctuated_word": "procrastinação",
+      "start": 84.737,
+      "end": 85.497
+    },
+    {
+      "punctuated_word": "em",
+      "start": 85.497,
+      "end": 85.737
+    },
+    {
+      "punctuated_word": "produtividade?",
+      "start": 85.737,
+      "end": 86.417
+    },
+    {
+      "punctuated_word": "Como",
+      "start": 87.097,
+      "end": 87.397
+    },
+    {
+      "punctuated_word": "você",
+      "start": 87.397,
+      "end": 87.697
+    },
+    {
+      "punctuated_word": "planeja",
+      "start": 87.697,
+      "end": 88.137
+    },
+    {
+      "punctuated_word": "começar",
+      "start": 88.137,
+      "end": 88.497
+    },
+    {
+      "punctuated_word": "a",
+      "start": 88.497,
+      "end": 88.657
+    },
+    {
+      "punctuated_word": "mudar",
+      "start": 88.657,
+      "end": 88.897
+    },
+    {
+      "punctuated_word": "esse",
+      "start": 88.897,
+      "end": 89.217
+    },
+    {
+      "punctuated_word": "padrão",
+      "start": 89.217,
+      "end": 89.557
+    },
+    {
+      "punctuated_word": "hoje?",
+      "start": 89.557,
+      "end": 89.937
     }
   ]
 }

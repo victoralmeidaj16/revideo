@@ -7,6 +7,7 @@
     "render": "tsc && node dist/render.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@revideo/2d": "0.10.4",
     "@revideo/core": "0.10.4",
     "@revideo/renderer": "0.10.4",
@@ -29,8 +30,10 @@
     "@types/body-parser": "^1.19.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/fluent-ffmpeg": "^2.1.28",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/uuid": "^10.0.0",
+    "fluent-ffmpeg": "^2.1.3",
     "ts-node": "^10.9.2",
     "typescript": "5.5.4",
     "vite": "^4.5"

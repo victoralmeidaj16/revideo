@@ -1,0 +1,59 @@
+[
+    {
+        "id": "livre",
+        "name": "Formato Livre",
+        "emoji": "✍️",
+        "description": "A IA decide a melhor estrutura para o tema.",
+        "structure": "Crie o roteiro da forma que achar mais interessante e envolvente para o tema. Use criatividade, um gancho forte no início e uma conclusão memorável."
+    },
+    {
+        "id": "mitos_verdades",
+        "name": "Mitos vs. Verdades",
+        "emoji": "🔍",
+        "description": "Desmistifica crenças populares com fatos reais.",
+        "structure": "Comece com 'Será que tudo que você ouviu sobre [tema] é verdade?'. Apresente 3 crenças populares, revelando se cada uma é MITO ou VERDADE com uma explicação curta e clara. Finalize com uma reflexão que incentive o espectador a repensar o que sabia."
+    },
+    {
+        "id": "storytelling",
+        "name": "História Envolvente",
+        "emoji": "📖",
+        "description": "Conta uma história real ou fictícia para prender a atenção.",
+        "structure": "Use a estrutura clássica de narrativa: GANCHO (situação incomum) → CONFLITO (o que deu errado ou surpreendeu) → RESOLUÇÃO (o desfecho inesperado). Mantenha o tom conversacional e crie suspense antes de revelar o final."
+    },
+    {
+        "id": "tutorial_rapido",
+        "name": "Tutorial Rápido",
+        "emoji": "💡",
+        "description": "Ensina algo prático em passos simples.",
+        "structure": "Comece com o benefício final (ex: 'Aprenda a [resultado] em 30 segundos'). Depois apresente 3 passos curtos e práticos, usando verbos de ação. Finalize com um convite para o espectador testar imediatamente."
+    },
+    {
+        "id": "comparacao",
+        "name": "Antes vs. Depois / Comparação",
+        "emoji": "⚖️",
+        "description": "Compara dois cenários, períodos ou abordagens.",
+        "structure": "Comece com uma pergunta provocativa (ex: 'Você sabia que antigamente [fato chocante]?'). Compare dois cenários usando contrastes claros (antigamente vs. hoje, com vs. sem, certo vs. errado). Finalize com uma opinião ou dado que surpreenda."
+    },
+    {
+        "id": "voce_sabia",
+        "name": "Você Sabia?",
+        "emoji": "🤯",
+        "description": "Fatos surpreendentes e curiosos que poucos conhecem.",
+        "structure": "Comece com 'Você sabia que...' seguido de um fato chocante. Desenvolva esse fato com mais contexto e detalhes fascinantes. Adicione um segundo fato relacionado ainda mais surpreendente. Finalize com uma pergunta para gerar engajamento."
+    },
+    {
+        "id": "listicle",
+        "name": "Top 5 Curiosidades",
+        "emoji": "📋",
+        "description": "Lista numerada com fatos surpreendentes sobre o tema.",
+        "structure": "Comece com um gancho forte (ex: 'Você não vai acreditar...'). Em seguida, apresente 5 itens curiosos sobre o tema, numerados de 1 a 5. Cada item deve ter 1-2 frases curtas e impactantes. Finalize com uma conclusão surpreendente que conecte os 5 fatos."
+    },
+    {
+        "id": "headlines_59",
+        "name": "59 Títulos Para Chamar a Atenção",
+        "emoji": "🎯",
+        "description": "Use títulos impactantes com gatilhos mentais. Selecione uma frase-modelo ou use o modo aleatório.",
+        "structure": "SPECIAL:HEADLINES",
+        "isHeadlineTemplate": true
+    }
+]

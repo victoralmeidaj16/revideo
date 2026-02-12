@@ -630,6 +630,131 @@
                 <p class="subtitle">Crie vídeos profissionais com inteligência artificial</p>
             </header>
 
+            <!-- Brand Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">
+                            <!-- Feather Icon: briefcase -->
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </span>
+                        Selecione a Marca
+                    </div>
+                    <span class="card-badge">Marcas</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <select id="brandSelector" style="flex: 1;">
+                        <option value="">Nenhuma (Padrão)</option>
+                    </select>
+                    <button onclick="openBrandEditor()" class="btn btn-ghost"
+                        style="padding: 6px 12px; font-size: 0.8125rem; border: 1px solid var(--accent-primary); border-radius: 8px; color: var(--accent-primary); white-space: nowrap;">
+                        ➕ Nova
+                    </button>
+                    <button id="editBrandBtn" onclick="openBrandEditor(document.getElementById('brandSelector').value)"
+                        class="btn btn-ghost"
+                        style="padding: 6px 10px; font-size: 0.8125rem; border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-secondary); display: none;">
+                        ✏️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Brand Editor Modal -->
+            <div id="brandEditorModal"
+                style="display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); padding: 20px; overflow-y: auto;">
+                <div
+                    style="max-width: 520px; margin: 40px auto; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: var(--space-lg);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+                        <h3 id="brandEditorTitle" style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">➕
+                            Nova Marca</h3>
+                        <button onclick="closeBrandEditor()"
+                            style="background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer;">&times;</button>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+                        <label style="color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600;">Nome da
+                            Marca *</label>
+                        <input id="brandName" type="text" placeholder="Ex: TechNova, ZenLife..."
+                            style="padding: 10px; background: var(--surface-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary);">
+
+                        <label
+                            style="color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600; margin-top: 8px;">Nicho
+                            / Segmento</label>
+                        <input id="brandNiche" type="text" placeholder="Ex: Saúde, Tecnologia, Finanças..."
+                            style="padding: 10px; background: var(--surface-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary);">
+
+                        <label
+                            style="color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600; margin-top: 8px;">📋
+                            Base de Conhecimento da Marca</label>
+                        <p style="color: var(--text-muted); font-size: 0.72rem; margin: 2px 0 6px 0; line-height: 1.4;">
+                            A IA consultará essas informações em TODA geração de conteúdo (roteiro, imagens e vídeos).
+                        </p>
+                        <textarea id="brandDescription" rows="6"
+                            placeholder="Inclua aqui todas as informações relevantes da marca:&#10;&#10;• Tom de voz (ex: descontraído, profissional, inspirador)&#10;• Público-alvo (ex: mulheres 25-40, empreendedores)&#10;• Valores da marca (ex: transparência, inovação)&#10;• Estilo visual (ex: minimalista, vibrante, dark mode)&#10;• Diferenciais (ex: baseado em neurociência)&#10;• Palavras-chave ou frases proibidas&#10;• Qualquer contexto que a IA precisa saber"
+                            style="padding: 10px; background: var(--surface-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); resize: vertical; font-size: 0.82rem; line-height: 1.5;"></textarea>
+
+                        <label
+                            style="color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600; margin-top: 12px;">🎨
+                            Cores do Tema</label>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            <div>
+                                <label style="color: var(--text-muted); font-size: 0.75rem;">Primária</label>
+                                <input id="brandColorPrimary" type="color" value="#6C5CE7"
+                                    style="width: 100%; height: 36px; border: none; border-radius: 6px; cursor: pointer;">
+                            </div>
+                            <div>
+                                <label style="color: var(--text-muted); font-size: 0.75rem;">Secundária</label>
+                                <input id="brandColorSecondary" type="color" value="#1A1A2E"
+                                    style="width: 100%; height: 36px; border: none; border-radius: 6px; cursor: pointer;">
+                            </div>
+                            <div>
+                                <label style="color: var(--text-muted); font-size: 0.75rem;">Destaque</label>
+                                <input id="brandColorAccent" type="color" value="#FF6B6B"
+                                    style="width: 100%; height: 36px; border: none; border-radius: 6px; cursor: pointer;">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 4px;">
+                            <div>
+                                <label style="color: var(--text-muted); font-size: 0.75rem;">Texto</label>
+                                <input id="brandColorText" type="color" value="#FFFFFF"
+                                    style="width: 100%; height: 36px; border: none; border-radius: 6px; cursor: pointer;">
+                            </div>
+                            <div>
+                                <label style="color: var(--text-muted); font-size: 0.75rem;">Fundo</label>
+                                <input id="brandColorBg" type="color" value="#0F0F19"
+                                    style="width: 100%; height: 36px; border: none; border-radius: 6px; cursor: pointer;">
+                            </div>
+                        </div>
+
+                        <label
+                            style="color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600; margin-top: 12px;">Fonte</label>
+                        <select id="brandFont"
+                            style="padding: 10px; background: var(--surface-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary);">
+                            <option value="Inter">Inter</option>
+                            <option value="Mulish">Mulish</option>
+                            <option value="Rubik">Rubik</option>
+                            <option value="Roboto">Roboto</option>
+                            <option value="Outfit">Outfit</option>
+                            <option value="Poppins">Poppins</option>
+                            <option value="Montserrat">Montserrat</option>
+                            <option value="Open Sans">Open Sans</option>
+                        </select>
+
+                        <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-md);">
+                            <button onclick="saveBrand()" class="btn btn-primary" style="flex: 1; padding: 12px;">💾
+                                Salvar Marca</button>
+                            <button id="deleteBrandBtn" onclick="deleteBrand()" class="btn btn-ghost"
+                                style="padding: 12px; color: #ef4444; border: 1px solid #ef4444; border-radius: var(--radius-md); display: none;">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
             <!-- Topic Card -->
             <div class="card">
                 <div class="card-header">
@@ -647,6 +772,50 @@
                 </div>
                 <input type="text" id="topic"
                     placeholder="Ex: Curiosidades sobre Café, Fatos incríveis sobre o universo...">
+            </div>
+
+            <!-- Template Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">
+                            <!-- Feather Icon: layout -->
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                        </span>
+                        Formato do Roteiro
+                    </div>
+                    <span class="card-badge">Templates</span>
+                </div>
+                <select id="templateSelector">
+                    <option value="">Carregando templates...</option>
+                </select>
+                <p id="templateDescription"
+                    style="color: var(--text-secondary); font-size: 0.8125rem; margin-top: var(--space-sm); min-height: 1.2em;">
+                </p>
+
+                <!-- Headline Sub-Selector (shown only when headlines_59 template is selected) -->
+                <div id="headlinePanel"
+                    style="display: none; margin-top: var(--space-md); border-top: 1px solid var(--border-subtle); padding-top: var(--space-md);">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm);">
+                        <label style="color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600;">Escolha um
+                            título-modelo:</label>
+                        <button onclick="selectRandomHeadline()" class="btn btn-ghost"
+                            style="padding: 4px 12px; font-size: 0.75rem; border: 1px solid var(--accent-primary); border-radius: 20px; color: var(--accent-primary);">
+                            🎲 Aleatório
+                        </button>
+                    </div>
+                    <select id="headlineSelector" style="width: 100%; font-size: 0.85rem;">
+                        <option value="">Carregando títulos...</option>
+                    </select>
+                    <p id="headlinePreview"
+                        style="color: var(--accent-primary); font-size: 0.8125rem; margin-top: var(--space-xs); font-style: italic; min-height: 1.2em;">
+                    </p>
+                </div>
             </div>
 
             <!-- Script Card -->
@@ -698,15 +867,60 @@
                         Voz (ElevenLabs)
                     </div>
                 </div>
-                <select id="voice">
-                    <option value="Sarah">Sarah — Madura, Confiante</option>
-                    <option value="Rachel">Rachel — Natural, Multilíngue</option>
-                    <option value="Adam">Adam — Masculino, Multilíngue</option>
-                    <option value="Roger">Roger — Descontraído</option>
-                    <option value="Charlie">Charlie — Profundo, Enérgico</option>
-                    <option value="Daniel">Daniel — Jornalista, Sério</option>
-                    <option value="Alice">Alice — Educativa, Clara</option>
-                </select>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="flex: 1;">
+                        <select id="voice" class="input-field" style="width: 100%;">
+                            <optgroup label="Vozes Padrão (Com Preview)">
+                                <option value="Sarah"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3">
+                                    Sarah — Madura, Confiante</option>
+                                <option value="Rachel"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/21m00Tcm4TlvDq8ikWAM/688d0484-932d-4f36-953e-3240ea05d541.mp3">
+                                    Rachel — Natural, Multilíngue</option>
+                                <option value="Adam"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/pNInz6obpgDQGcFmaJgB/d6905d7a-dd26-4187-bfff-1bd3a5ea7cac.mp3">
+                                    Adam — Masculino, Firme</option>
+                                <option value="Charlie"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/IKne3meq5aSn9XLyUdCD/102de6f2-22ed-43e0-a1f1-111fa75c5481.mp3">
+                                    Charlie — Profundo, Enérgico</option>
+                                <option value="Daniel"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/onwK4e9ZLuTAKqWW03F9/7eee0236-1a72-4b86-b303-5dcadc007ba9.mp3">
+                                    Daniel — Jornalista, Sério</option>
+                                <option value="Alice"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/Xb7hH8MSUJpSbSDYk0k2/d10f7534-11f6-41fe-a012-2de1e482d336.mp3">
+                                    Alice — Educativa, Clara</option>
+                                <option value="Bill"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/pqHfZKP75CvOlQylNhV4/d782b3ff-84ba-4029-848c-acf01285524d.mp3">
+                                    Bill — Sábio, Maduro</option>
+                            </optgroup>
+
+                            <optgroup label="Vozes Populares (Solicitadas)">
+                                <option value="wBXNqKUATyqu0RtYt25i"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/database/user/wIeLJDEBzzSjyBaHeswPcLH1I1U2/voices/wBXNqKUATyqu0RtYt25i/92f83238-5f85-4793-ba6b-dc2cdc482735.mp3">
+                                    Adam — Descontraído (Novo)</option>
+
+                                <!-- Public Alternatives with Preview -->
+                                <option value="cgSgspJ2msm6clMCkdW9"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/cgSgspJ2msm6clMCkdW9/56a97bf8-b69b-448f-846c-c3a11683d45a.mp3">
+                                    Jessica — Brincalhona, Brilhante (Pública)</option>
+                                <option value="bIHbv24MWmeRgasZH58o"
+                                    data-preview-url="https://storage.googleapis.com/eleven-public-prod/premade/voices/bIHbv24MWmeRgasZH58o/8caf8f3d-ad29-4980-af41-53f20c72d7a4.mp3">
+                                    Will — Otimista, Relaxado (Pública)</option>
+
+                                <!-- Validated Voices from Account -->
+                                <option value="jBpfuIE2acCO8z3wKNLl">Gigi — (Substituindo Jessica)</option>
+                                <option value="piTKgcLEGmPE4e6mEKli">Nicole — (ID Validado: piTKgc...)</option>
+                                <option value="bVMeCyTHyQqQsrCOs8W5">Jeremy — (Substituindo Will)</option>
+                                <option value="ODq5zmih8GrVes37Dizj">Patrick — (Substituindo Rick)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <button id="playPreviewBtn" class="btn-secondary" style="width: auto; padding: 10px 14px;"
+                        title="Ouvir Preview">
+                        <span class="material-icons" style="font-size: 20px;">play_arrow</span>
+                    </button>
+                </div>
+                <audio id="audioPreview" style="display: none;"></audio>
             </div>
 
             <!-- Reference Image Upload Card -->
@@ -789,6 +1003,8 @@
                             style="padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-primary); background: var(--bg-elevated); color: var(--text-primary); font-size: 0.9rem;">
                             <option value="kling-v1">Kling v1 (Padrão)</option>
                             <option value="kling-v1-5">Kling v1.5 (Melhor qualidade)</option>
+                            <option value="kling-v1-6">Kling v1.6 (High Quality)</option>
+                            <option value="kling-v2-6" selected>Kling v2.6 (Nova Geração)</option>
                         </select>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: var(--space-xs);">
@@ -854,15 +1070,62 @@
             </div>
 
             <!-- Generate Buttons -->
-            <button onclick="generatePreview()" id="previewBtn" class="btn btn-secondary"
+            <button onclick="createDraft()" id="draftBtn" class="btn btn-secondary"
                 style="margin-top: var(--space-lg);">
-                🖼️ Gerar Preview de Imagens
+                📝 Criar Rascunho para Revisão
+            </button>
+
+            <button onclick="generatePreview()" id="previewBtn" class="btn btn-secondary"
+                style="margin-top: var(--space-sm);">
+                🖼️ Gerar Preview Direto (sem revisão)
             </button>
 
             <button onclick="generateVideos()" id="videoBtn" class="btn btn-primary"
                 style="display:none; margin-top: var(--space-md);">
                 🎬 Gerar Vídeos Animados (Kling AI)
             </button>
+
+            <!-- Review Dashboard (Initially Hidden) -->
+            <div id="reviewDashboard" class="card"
+                style="display:none; margin-top: var(--space-lg); border: 2px solid var(--accent-primary);">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                        </span>
+                        Revisão do Rascunho
+                    </div>
+                    <span class="card-badge" id="draftStatusBadge"
+                        style="background: rgba(255,193,7,0.15); color: #ffc107;">Pendente</span>
+                </div>
+
+                <div style="padding: var(--space-md);">
+                    <label
+                        style="color: var(--text-secondary); font-size: 0.875rem; font-weight: 600; display: block; margin-bottom: var(--space-xs);">Roteiro
+                        (editável antes de aprovar):</label>
+                    <textarea id="draftScriptReview"
+                        style="width: 100%; min-height: 120px; background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); padding: var(--space-sm); font-family: inherit; font-size: 0.9rem; resize: vertical;"></textarea>
+                </div>
+
+                <div id="draftPreviewGrid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-sm); padding: 0 var(--space-md) var(--space-md);">
+                    <!-- Draft preview images loaded here -->
+                </div>
+
+                <div
+                    style="display: flex; gap: var(--space-md); padding: 0 var(--space-md) var(--space-md); flex-wrap: wrap;">
+                    <button onclick="approveDraft()" id="approveBtn" class="btn btn-primary" style="flex: 1;">
+                        ✅ Aprovar e Renderizar
+                    </button>
+                    <button onclick="rejectDraft()" id="rejectBtn" class="btn btn-ghost"
+                        style="flex: 0; min-width: 120px; border: 1px solid var(--border-primary);">
+                        ❌ Descartar
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Status Card (Moved from Side) -->
@@ -925,6 +1188,74 @@
         useVideoCheckbox.addEventListener('change', toggleKlingOptions);
         toggleKlingOptions(); // Set initial state
 
+        // Listen for Kling Model change to enforce specific modes
+        const klingModelSelect = document.getElementById('klingModelSelect');
+        const klingModeSelect = document.getElementById('klingModeSelect');
+
+        function toggleKlingMode() {
+            const model = klingModelSelect.value;
+            if (model === 'kling-v2-6') {
+                // v2.6 requires Pro mode for end-frame support
+                klingModeSelect.value = 'pro';
+
+                // Disable 'std' option or select
+                // Let's just visually enforce it by disabling the select or options
+                for (let i = 0; i < klingModeSelect.options.length; i++) {
+                    if (klingModeSelect.options[i].value === 'std') {
+                        klingModeSelect.options[i].disabled = true;
+                        klingModeSelect.options[i].innerText = 'Standard (Não suportado no v2.6)';
+                    }
+                }
+            } else {
+                // Re-enable options
+                for (let i = 0; i < klingModeSelect.options.length; i++) {
+                    klingModeSelect.options[i].disabled = false;
+                    if (klingModeSelect.options[i].value === 'std') {
+                        klingModeSelect.options[i].innerText = 'Standard';
+                    }
+                }
+            }
+        }
+
+        klingModelSelect.addEventListener('change', toggleKlingMode);
+        // Voice Preview Logic
+        const playPreviewBtn = document.getElementById('playPreviewBtn');
+        const voiceSelect = document.getElementById('voice');
+        const audioPreview = document.getElementById('audioPreview');
+
+        playPreviewBtn.addEventListener('click', () => {
+            const selectedOption = voiceSelect.options[voiceSelect.selectedIndex];
+            const previewUrl = selectedOption.getAttribute('data-preview-url');
+
+            if (previewUrl) {
+                if (audioPreview.src !== previewUrl) {
+                    audioPreview.src = previewUrl;
+                }
+
+                if (audioPreview.paused) {
+                    audioPreview.play();
+                    playPreviewBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">stop</span>';
+                } else {
+                    audioPreview.pause();
+                    audioPreview.currentTime = 0;
+                    playPreviewBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">play_arrow</span>';
+                }
+            } else {
+                alert('Preview não disponível para esta voz.');
+            }
+        });
+
+        audioPreview.addEventListener('ended', () => {
+            playPreviewBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">play_arrow</span>';
+        });
+
+        // Reset icon when voice changes
+        voiceSelect.addEventListener('change', () => {
+            audioPreview.pause();
+            audioPreview.currentTime = 0;
+            playPreviewBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">play_arrow</span>';
+        });
+
         async function generateProPrompts() {
             const topic = document.getElementById('topic').value;
             const script = document.getElementById('scriptText').value;
@@ -943,7 +1274,12 @@
                 const response = await fetch('http://localhost:3001/api/generate-prompts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ script, topic })
+                    body: JSON.stringify({
+                        script,
+                        topic,
+                        brandId: document.getElementById('brandSelector').value,
+                        templateId: document.getElementById('templateSelector').value
+                    })
                 });
 
                 const data = await response.json();
@@ -966,10 +1302,7 @@
 
         async function generateScript() {
             const topic = document.getElementById('topic').value;
-            if (!topic) {
-                alert("Por favor, digite um tópico.");
-                return;
-            }
+            // Topic is now optional. If empty, AI will decide based on brand.
 
             const btn = document.getElementById('genScriptBtn');
             const scriptArea = document.getElementById('scriptText');
@@ -982,7 +1315,12 @@
                 const response = await fetch('http://localhost:3001/api/generate-script', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic })
+                    body: JSON.stringify({
+                        topic,
+                        templateId: document.getElementById('templateSelector').value,
+                        headlineFormula: getSelectedHeadline(),
+                        brandId: document.getElementById('brandSelector').value
+                    })
                 });
                 const data = await response.json();
                 if (data.success) {
@@ -1011,7 +1349,7 @@
             const isVideoMode = useVideoCheckbox.checked;
 
             btn.disabled = true;
-            
+
             // Collect prompts
             const prompts = [];
             for (let i = 0; i < 5; i++) {
@@ -1022,10 +1360,10 @@
             // Get reference image URL if uploaded
             const referenceImageUrl = window.uploadedReferenceImageUrl || null;
 
-            // If static mode (no video), skip preview and go directly to final generation
-            if (!isVideoMode) {
-                btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeo estático...';
-                
+            if (isVideoMode) {
+                // Video Mode: Generate Videos directly and show preview
+                btn.innerHTML = '<span class="loading-spinner"></span> Gerando vídeos (Kling AI)...';
+
                 try {
                     const voice = document.getElementById('voice').value;
                     const klingConfig = {
@@ -1033,37 +1371,97 @@
                         mode: document.getElementById('klingModeSelect').value
                     };
 
-                    // Show status container
+                    // Show status container (for feedback only, not blocking)
                     document.getElementById('statusContainer').style.display = 'block';
                     const statusTitle = document.getElementById('statusTitle');
                     const statusText = document.getElementById('statusText');
                     const statusIcon = document.getElementById('statusIcon');
                     const previewLink = document.getElementById('previewLink');
 
-                    statusTitle.innerText = "Gerando Vídeo Estático...";
-                    statusText.innerText = "Preparando vídeo com imagens estáticas. Isso leva cerca de 1 minuto.";
+                    statusTitle.innerText = "Gerando Vídeos...";
+                    statusText.innerText = `Gerando 5 cenas com Kling AI (${klingConfig.model}). Isso pode levar alguns minutos.`;
                     statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
                     statusIcon.style.animation = "spin 2s infinite linear";
+                    previewLink.style.display = 'none';
 
+                    // Call generate-videos endpoint (which does the heavy lifting)
                     const response = await fetch('http://localhost:3001/api/generate-videos', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo: false, klingConfig })
+                        body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo: true, klingConfig })
                     });
 
                     const data = await response.json();
 
                     if (data.success) {
-                        statusTitle.innerText = "Vídeo Estático Pronto! 🎉";
-                        statusText.innerText = "Suas imagens estáticas foram geradas com sucesso. Clique abaixo para visualizar.";
+                        // Success! Load previews
+                        await loadPreviewAssets();
+
+                        // Update Status
+                        statusTitle.innerText = "Vídeos Gerados! 🎬";
+                        statusText.innerText = "Seus clipes estão prontos. Veja o preview abaixo ou finalize seu projeto.";
                         statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
                         statusIcon.style.animation = "none";
+
+                        // Show "Open Editor" button instead of "Generate Videos"
+                        const videoBtn = document.getElementById('videoBtn');
+                        videoBtn.style.display = 'block';
+                        videoBtn.innerHTML = '🚀 Abrir Editor & Montar Vídeo';
+                        videoBtn.onclick = () => window.open('http://localhost:9000', '_blank');
+
+                        // Also show link in status card
                         previewLink.style.display = 'block';
+
+                        // Scroll to gallery
+                        document.getElementById('previewGallery').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     } else {
-                        statusTitle.innerText = "Erro";
-                        statusText.innerText = "Falha ao gerar: " + data.error;
-                        statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
-                        statusIcon.style.animation = "none";
+                        throw new Error(data.error);
+                    }
+                } catch (e) {
+                    alert("Erro ao gerar vídeos: " + e.message);
+                    document.getElementById('statusTitle').innerText = "Erro";
+                    document.getElementById('statusText').innerText = "Falha: " + e.message;
+                    document.getElementById('statusIcon').style.animation = "none";
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            } else {
+                // Static Mode: Standard Image Preview
+                btn.innerHTML = '<span class="loading-spinner"></span> Gerando imagens...';
+
+                try {
+                    const response = await fetch('http://localhost:3001/api/preview-images', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            script,
+                            imagePrompts: prompts,
+                            referenceImageUrl,
+                            brandId: document.getElementById('brandSelector').value
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        await loadPreviewAssets();
+                        // Show "Generate Videos" button (Wait, in static mode user might want to finalize too)
+                        // For static mode, "Generate Final Video" just means "Go to Editor" with images
+                        const videoBtn = document.getElementById('videoBtn');
+                        videoBtn.style.display = 'block';
+                        videoBtn.innerHTML = '🚀 Finalizar (Modo Estático)';
+                        videoBtn.onclick = generateVideos; // Keep original flow for static for now, or direct to editor?
+                        // Actually, static mode flow in original code called generateVideos(false) which triggered generation again?
+                        // In original code: generatePreview only did preview-images.
+                        // Then generateVideos called generate-videos(false) which generated assets.
+                        // So we leave static mode as is? 
+                        // No, let's unify.
+
+                        document.getElementById('previewGallery').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        alert("Erro ao gerar preview: " + data.error);
                     }
                 } catch (e) {
                     alert("Erro de conexão: " + e.message);
@@ -1071,45 +1469,13 @@
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                 }
-                return;
-            }
-
-            // Video mode - show preview first
-            btn.innerHTML = '<span class="loading-spinner"></span> Gerando imagens...';
-
-            try {
-                const response = await fetch('http://localhost:3001/api/preview-images', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ script, imagePrompts: prompts, referenceImageUrl })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Load and show preview images
-                    await loadPreviewImages();
-
-                    // Show "Generate Videos" button
-                    document.getElementById('videoBtn').style.display = 'block';
-
-                    // Scroll to gallery
-                    document.getElementById('previewGallery').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                } else {
-                    alert("Erro ao gerar preview: " + data.error);
-                }
-            } catch (e) {
-                alert("Erro de conexão: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
             }
         }
 
 
-        async function loadPreviewImages() {
+        async function loadPreviewAssets() {
             try {
-                // Read metadata to get image filenames (from /metadata.json which is served from public)
+                // Read metadata to get assets
                 const response = await fetch('/metadata.json?t=' + Date.now());
                 const metadata = await response.json();
 
@@ -1118,17 +1484,29 @@
                 const previewGrid = document.getElementById('previewGrid');
                 previewGrid.innerHTML = '';
 
-                // metadata.images contains the base image names like "/jobId-base-image-0.png"
-                // For preview mode with images only, we show all 5 base images
-                for (let i = 0; i < Math.min(5, metadata.images.length); i++) {
-                    const imagePath = metadata.images[i];
+                // Check mode
+                const isVideo = metadata.isVideoMode;
+
+                const items = isVideo ? metadata.videos : metadata.images;
+                const limit = Math.min(5, items.length);
+
+                for (let i = 0; i < limit; i++) {
+                    const itemPath = items[i]; // e.g., /jobId-video-0.mp4 or /jobId-image-0.png
 
                     const pairDiv = document.createElement('div');
                     pairDiv.style.cssText = 'border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; background: rgba(255, 255, 255, 0.02);';
+
+                    let mediaHtml = '';
+                    if (isVideo) {
+                        mediaHtml = `<video src="${itemPath}?t=${Date.now()}" controls style="width: 100%; border-radius: var(--radius-sm); aspect-ratio: 9/16; object-fit: cover;"></video>`;
+                    } else {
+                        mediaHtml = `<img src="${itemPath}?t=${Date.now()}" style="width: 100%; border-radius: var(--radius-sm); aspect-ratio: 9/16; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: var(--text-muted);\\'>Erro ao carregar</div>'">`;
+                    }
+
                     pairDiv.innerHTML = `
                         <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem; font-weight: 600;">Cena ${i + 1}</div>
                         <div style="display: flex; justify-content: center;">
-                            <img src="${imagePath}?t=${Date.now()}" style="max-width: 100%; border-radius: var(--radius-sm); aspect-ratio: 9/16; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: var(--text-muted);\\'>Imagem não encontrada</div>'">
+                            ${mediaHtml}
                         </div>
                     `;
                     previewGrid.appendChild(pairDiv);
@@ -1136,9 +1514,13 @@
 
                 // Show gallery
                 document.getElementById('previewGallery').style.display = 'block';
+
+                // Update Badge
+                document.querySelector('#previewGallery .card-badge').innerText = isVideo ? '5 vídeos gerados' : '6 imagens progressivas';
+
             } catch (error) {
-                console.error('Error loading preview images:', error);
-                alert('Erro ao carregar preview das imagens. Verifique o console.');
+                console.error('Error loading preview assets:', error);
+                alert('Erro ao carregar preview. Verifique o console.');
             }
         }
 
@@ -1198,7 +1580,16 @@
                 const response = await fetch('http://localhost:3001/api/generate-videos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ script, voice, imagePrompts: prompts, referenceImageUrl, useVideo, klingConfig })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        script,
+                        voice,
+                        imagePrompts: prompts,
+                        referenceImageUrl,
+                        useVideo,
+                        klingConfig,
+                        brandId: document.getElementById('brandSelector').value
+                    })
                 });
 
                 const data = await response.json();
@@ -1212,6 +1603,9 @@
                     statusIcon.innerHTML = `<svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
                     statusIcon.style.animation = "none";
                     previewLink.style.display = 'block';
+
+                    // AUTO OPEN
+                    window.open('http://localhost:9000', '_blank');
                 } else {
                     statusTitle.innerText = "Erro na Geração";
                     statusText.innerText = data.error || "Ocorreu um erro ao gerar os vídeos.";
@@ -1303,6 +1697,430 @@
                 alert('Erro de conexão ao fazer upload: ' + err.message);
                 resetUpload();
             }
+        }
+
+        // Brand Logic
+        const brandSelector = document.getElementById('brandSelector');
+        let brandsData = [];
+
+        async function loadBrands() {
+            try {
+                const response = await fetch('/api/brands');
+                brandsData = await response.json();
+
+                brandsData.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand.id;
+                    option.textContent = `${brand.name} (${brand.niche})`;
+                    brandSelector.appendChild(option);
+                });
+            } catch (e) {
+                console.error("Failed to load brands:", e);
+            }
+        }
+
+        brandSelector.addEventListener('change', () => {
+            const brandId = brandSelector.value;
+            const brand = brandsData.find(b => b.id === brandId);
+
+            // Show/hide edit button
+            document.getElementById('editBrandBtn').style.display = brandId ? 'inline-flex' : 'none';
+
+            if (brand) {
+                // Auto-select voice
+                const voiceSelect = document.getElementById('voice');
+                const voiceId = brand.voice.providerId;
+
+                let optionFound = false;
+                for (let i = 0; i < voiceSelect.options.length; i++) {
+                    if (voiceSelect.options[i].value === voiceId) {
+                        voiceSelect.selectedIndex = i;
+                        optionFound = true;
+                        break;
+                    }
+                }
+
+                if (!optionFound) {
+                    console.warn(`Voice ID ${voiceId} for brand ${brand.name} not found in dropdown.`);
+                }
+
+                voiceSelect.style.borderColor = brand.theme.primaryColor;
+            } else {
+                document.getElementById('voice').style.borderColor = 'var(--border-subtle)';
+            }
+        });
+
+        // Brand Editor Functions
+        let editingBrandId = null;
+
+        function openBrandEditor(brandId) {
+            editingBrandId = brandId || null;
+            const modal = document.getElementById('brandEditorModal');
+
+            if (editingBrandId) {
+                // Edit mode — populate fields
+                const brand = brandsData.find(b => b.id === editingBrandId);
+                if (!brand) return;
+
+                document.getElementById('brandEditorTitle').textContent = '✏️ Editar Marca';
+                document.getElementById('brandName').value = brand.name || '';
+                document.getElementById('brandNiche').value = brand.niche || '';
+                document.getElementById('brandDescription').value = brand.description || '';
+                document.getElementById('brandColorPrimary').value = brand.theme?.primaryColor || '#6C5CE7';
+                document.getElementById('brandColorSecondary').value = brand.theme?.secondaryColor || '#1A1A2E';
+                document.getElementById('brandColorAccent').value = brand.theme?.accentColor || '#FF6B6B';
+                document.getElementById('brandColorText').value = brand.theme?.textColor || '#FFFFFF';
+                document.getElementById('brandColorBg').value = brand.theme?.backgroundColor || '#0F0F19';
+                document.getElementById('brandFont').value = brand.theme?.fontFamily || 'Inter';
+                document.getElementById('deleteBrandBtn').style.display = 'block';
+            } else {
+                // Create mode — reset fields
+                document.getElementById('brandEditorTitle').textContent = '➕ Nova Marca';
+                document.getElementById('brandName').value = '';
+                document.getElementById('brandNiche').value = '';
+                document.getElementById('brandDescription').value = '';
+                document.getElementById('brandColorPrimary').value = '#6C5CE7';
+                document.getElementById('brandColorSecondary').value = '#1A1A2E';
+                document.getElementById('brandColorAccent').value = '#FF6B6B';
+                document.getElementById('brandColorText').value = '#FFFFFF';
+                document.getElementById('brandColorBg').value = '#0F0F19';
+                document.getElementById('brandFont').value = 'Inter';
+                document.getElementById('deleteBrandBtn').style.display = 'none';
+            }
+
+            modal.style.display = 'block';
+        }
+
+        function closeBrandEditor() {
+            document.getElementById('brandEditorModal').style.display = 'none';
+            editingBrandId = null;
+        }
+
+        async function saveBrand() {
+            const name = document.getElementById('brandName').value.trim();
+            if (!name) {
+                alert('Nome da marca é obrigatório!');
+                return;
+            }
+
+            const brandData = {
+                name,
+                niche: document.getElementById('brandNiche').value.trim(),
+                description: document.getElementById('brandDescription').value.trim(),
+                theme: {
+                    primaryColor: document.getElementById('brandColorPrimary').value,
+                    secondaryColor: document.getElementById('brandColorSecondary').value,
+                    accentColor: document.getElementById('brandColorAccent').value,
+                    textColor: document.getElementById('brandColorText').value,
+                    backgroundColor: document.getElementById('brandColorBg').value,
+                    fontFamily: document.getElementById('brandFont').value
+                },
+                voice: { name: 'Sarah', details: '', provider: 'elevenlabs', providerId: 'EXAVITQu4vr4xnSDxMaL' },
+                watermarkOpacity: 0.8
+            };
+
+            try {
+                let url, method;
+                if (editingBrandId) {
+                    url = `http://localhost:3001/api/brands/${editingBrandId}`;
+                    method = 'PUT';
+                } else {
+                    url = 'http://localhost:3001/api/brands';
+                    method = 'POST';
+                }
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(brandData)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    closeBrandEditor();
+                    await refreshBrands(data.brand?.id || editingBrandId);
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (e) {
+                alert('Erro de conexão: ' + e.message);
+            }
+        }
+
+        async function deleteBrand() {
+            if (!editingBrandId) return;
+            if (!confirm('Tem certeza que deseja excluir esta marca?')) return;
+
+            try {
+                const response = await fetch(`http://localhost:3001/api/brands/${editingBrandId}`, { method: 'DELETE' });
+                const data = await response.json();
+
+                if (data.success) {
+                    closeBrandEditor();
+                    await refreshBrands();
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (e) {
+                alert('Erro de conexão: ' + e.message);
+            }
+        }
+
+        async function refreshBrands(selectId) {
+            brandSelector.innerHTML = '<option value="">Nenhuma (Padrão)</option>';
+            try {
+                const response = await fetch('/api/brands');
+                brandsData = await response.json();
+                brandsData.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand.id;
+                    option.textContent = `${brand.name}${brand.niche ? ' (' + brand.niche + ')' : ''}`;
+                    brandSelector.appendChild(option);
+                });
+                if (selectId) {
+                    brandSelector.value = selectId;
+                    brandSelector.dispatchEvent(new Event('change'));
+                }
+            } catch (e) {
+                console.error('Failed to refresh brands:', e);
+            }
+        }
+
+        // Initialize
+        loadBrands();
+        loadTemplates();
+
+
+
+
+        // Template Logic
+        const templateSelector = document.getElementById('templateSelector');
+        const templateDescription = document.getElementById('templateDescription');
+
+        async function loadTemplates() {
+            try {
+                const response = await fetch('/api/templates');
+                const templatesData = await response.json();
+
+                templateSelector.innerHTML = '';
+                templatesData.forEach(t => {
+                    const option = document.createElement('option');
+                    option.value = t.id;
+                    option.textContent = `${t.emoji} ${t.name}`;
+                    option.dataset.description = t.description;
+                    templateSelector.appendChild(option);
+                });
+
+                // Show description of first template
+                if (templatesData.length > 0) {
+                    templateDescription.textContent = templatesData[0].description;
+                }
+            } catch (e) {
+                console.error('Failed to load templates:', e);
+                templateSelector.innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+
+        templateSelector.addEventListener('change', () => {
+            const selected = templateSelector.options[templateSelector.selectedIndex];
+            templateDescription.textContent = selected.dataset.description || '';
+
+            // Show/hide headline panel
+            const isHeadlineTemplate = selected.value === 'headlines_59';
+            document.getElementById('headlinePanel').style.display = isHeadlineTemplate ? 'block' : 'none';
+        });
+
+        // Headline Logic
+        let headlinesData = [];
+        const headlineSelector = document.getElementById('headlineSelector');
+        const headlinePreview = document.getElementById('headlinePreview');
+
+        async function loadHeadlines() {
+            try {
+                const response = await fetch('http://localhost:3001/api/headlines');
+                const data = await response.json();
+
+                if (data.success && data.headlines.length > 0) {
+                    headlinesData = data.headlines;
+                    headlineSelector.innerHTML = '<option value="">🎲 Selecione um título (ou use Aleatório)</option>';
+                    data.headlines.forEach((h, idx) => {
+                        const option = document.createElement('option');
+                        option.value = h;
+                        option.textContent = `${idx + 1}. ${h.substring(0, 80)}${h.length > 80 ? '...' : ''}`;
+                        headlineSelector.appendChild(option);
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load headlines:', e);
+            }
+        }
+
+        loadHeadlines();
+
+        headlineSelector.addEventListener('change', () => {
+            headlinePreview.textContent = headlineSelector.value || '';
+        });
+
+        function selectRandomHeadline() {
+            if (headlinesData.length === 0) return;
+            const randomIdx = Math.floor(Math.random() * headlinesData.length);
+            headlineSelector.selectedIndex = randomIdx + 1; // +1 for the placeholder option
+            headlinePreview.textContent = headlinesData[randomIdx];
+            // Visual feedback
+            headlinePreview.style.color = 'var(--success)';
+            setTimeout(() => { headlinePreview.style.color = 'var(--accent-primary)'; }, 800);
+        }
+
+        function getSelectedHeadline() {
+            const templateId = document.getElementById('templateSelector').value;
+            if (templateId !== 'headlines_59') return undefined;
+            return headlineSelector.value || undefined;
+        }
+
+        // Draft / Approval Flow
+        let currentDraftId = null;
+
+        async function createDraft() {
+            const script = document.getElementById('scriptText').value;
+            const voice = document.getElementById('voice').value;
+            const brandId = document.getElementById('brandSelector').value;
+            const templateId = document.getElementById('templateSelector').value;
+            const useVideo = document.getElementById('useVideoCheckbox').checked;
+
+            if (!script) {
+                alert('Por favor, escreva ou gere um roteiro primeiro.');
+                return;
+            }
+
+            const prompts = [];
+            for (let i = 0; i < 5; i++) {
+                const val = document.getElementById(`prompt-${i}`).value;
+                if (val.trim()) prompts.push(val);
+            }
+
+            const referenceImageUrl = window.uploadedReferenceImageUrl || null;
+            const klingConfig = {
+                model: document.getElementById('klingModelSelect').value,
+                mode: document.getElementById('klingModeSelect').value
+            };
+
+            const btn = document.getElementById('draftBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Criando rascunho...';
+
+            try {
+                const response = await fetch('http://localhost:3001/api/draft', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        script, voice, imagePrompts: prompts,
+                        referenceImageUrl, brandId, templateId,
+                        useVideo, klingConfig
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentDraftId = data.draft.id;
+                    document.getElementById('draftScriptReview').value = data.draft.script;
+
+                    // Load preview images into draft grid
+                    await loadDraftPreview();
+
+                    // Show dashboard
+                    document.getElementById('reviewDashboard').style.display = 'block';
+                    document.getElementById('reviewDashboard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    alert('Erro ao criar rascunho: ' + data.error);
+                }
+            } catch (e) {
+                alert('Erro de conexão: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function loadDraftPreview() {
+            try {
+                const response = await fetch('/metadata.json?t=' + Date.now());
+                const metadata = await response.json();
+                const grid = document.getElementById('draftPreviewGrid');
+                grid.innerHTML = '';
+
+                const items = metadata.images || [];
+                const limit = Math.min(5, items.length);
+
+                for (let i = 0; i < limit; i++) {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'border-radius: var(--radius-md); overflow: hidden;';
+                    div.innerHTML = `<img src="${items[i]}?t=${Date.now()}" style="width: 100%; aspect-ratio: 9/16; object-fit: cover; border-radius: var(--radius-sm);">`;
+                    grid.appendChild(div);
+                }
+            } catch (e) {
+                console.error('Error loading draft preview:', e);
+            }
+        }
+
+        async function approveDraft() {
+            if (!currentDraftId) return;
+
+            const editedScript = document.getElementById('draftScriptReview').value;
+            const btn = document.getElementById('approveBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Renderizando...';
+
+            // Show status
+            document.getElementById('statusContainer').style.display = 'block';
+            document.getElementById('statusTitle').innerText = 'Renderizando Rascunho Aprovado...';
+            document.getElementById('statusText').innerText = 'Gerando o vídeo final com as configurações aprovadas.';
+            document.getElementById('statusIcon').style.animation = 'spin 2s infinite linear';
+
+            try {
+                const response = await fetch(`http://localhost:3001/api/draft/${currentDraftId}/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ script: editedScript })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('draftStatusBadge').textContent = 'Aprovado ✅';
+                    document.getElementById('draftStatusBadge').style.background = 'rgba(76,175,80,0.15)';
+                    document.getElementById('draftStatusBadge').style.color = '#4caf50';
+
+                    document.getElementById('statusTitle').innerText = 'Vídeo Pronto! 🎉';
+                    document.getElementById('statusText').innerText = 'O rascunho foi aprovado e o vídeo final foi renderizado.';
+                    document.getElementById('statusIcon').style.animation = 'none';
+                    document.getElementById('previewLink').style.display = 'block';
+
+                    window.open('http://localhost:9000', '_blank');
+                } else {
+                    alert('Erro ao renderizar: ' + data.error);
+                }
+            } catch (e) {
+                alert('Erro de conexão: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function rejectDraft() {
+            if (!currentDraftId) return;
+
+            if (!confirm('Deseja descartar este rascunho?')) return;
+
+            try {
+                await fetch(`http://localhost:3001/api/draft/${currentDraftId}`, { method: 'DELETE' });
+            } catch (e) { /* ignore */ }
+
+            currentDraftId = null;
+            document.getElementById('reviewDashboard').style.display = 'none';
         }
 
         function resetUpload() {
